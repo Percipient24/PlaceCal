@@ -121,7 +121,7 @@ class Views::Admin::Sites::Show < Views::Admin::Base
   def render_time_ago(timestamp)
     if timestamp
       span(class: 'text-sm text-base-content/70',
-           title: timestamp.strftime('%d %b %Y at %H:%M')) { "#{time_ago_in_words(timestamp)} ago" }
+           title: I18n.l(timestamp, format: :event_datetime)) { "#{time_ago_in_words(timestamp)} ago" }
     else
       span(class: 'text-gray-500') { "\u2014" }
     end

@@ -47,7 +47,7 @@ RSpec.describe "Partner events CSV export", type: :request do
     it "includes upcoming events with poster-ready fields" do
       row = parsed_csv.find { |r| r["Title"] == "Tea Dance" }
       expect(row).to be_present
-      expect(row["Date"]).to eq(upcoming_event.dtstart.strftime("%e %b %Y").strip)
+      expect(row["Date"]).to eq(upcoming_event.date_year)
       expect(row["Time"]).to eq(upcoming_event.time)
       expect(row["Location"]).to eq(upcoming_event.location)
       expect(row["Organiser"]).to eq(partner.name)

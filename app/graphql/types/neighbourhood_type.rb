@@ -4,7 +4,7 @@ module Types
   DateTimeType = GraphQL::Types::ISO8601Date
 
   class NeighbourhoodType < Types::BaseObject
-    description 'A political divison, for example as established by the UK Boundary Authority. Can be on a number of scales from local to national'
+    description 'A geographic area, for example a ward, district, county or region. Can be on a number of scales from local to national'
 
     # field :id, ID, null: false
     field :name, String,

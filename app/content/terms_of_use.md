@@ -1,3 +1,5 @@
+As a disclaimer ... The Scottsville Collective still needs to update this policy, which is in place from the original open source project (Geeks for Social Change / PlaceCal). The spirit of our policy will be similar, but the details will be different.
+
 ## Acceptance of Terms of Use Agreement
 
 By using the PlaceCal website or by signing up for an account with PlaceCal (the "Service"), you agree to be bound by these Terms of Use and our Privacy Policy, which is incorporated by reference into this Agreement (the "Agreement"). If you do not accept and agree to be bound by all of the terms of this Agreement, please do not use the Service.

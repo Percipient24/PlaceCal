@@ -26,9 +26,9 @@ en:
 
   colophon:
     year: "© 2019-%{year}"
-    copyright: "GFSC Community Interest Company"
-    company: "Registered in England and Wales #12135472"
-    address: "5 Ribston Street, Manchester, M15 5RH"
+    copyright: "The Scottsville Collective"
+    company: "(pending 501(c)(3) non-profit organization)"
+    address: "(we should really get a PO Box)"
     build: "Build:"
     gfsc_logo_alt: "Geeks for Social Change"
 
@@ -304,9 +304,9 @@ en:
     event_row:
       online: "Online"
     home:
-      description: "Find community groups, venues and events near you. PlaceCal aggregates thousands of events from hundreds of local organisations across the UK."
+      description: "Find community groups, venues and events near you. PlaceCal aggregates thousands of events from hundreds of local organisations near you."
       hero_title: "Find community groups, venues and events near you."
-      hero_subtitle: "PlaceCal aggregates thousands of events and activities from hundreds of local community organisations across the UK. This is the directory for all of it — search by place, by interest, or browse the map."
+      hero_subtitle: "PlaceCal aggregates thousands of events and activities from hundreds of local community organisations in your area. This is the directory for all of it — search by place, by interest, or browse the map."
       stats:
         # Partner/Partnership/Neighbourhood labels come from model_name.human;
         # only the non-model "this month" label lives here.
@@ -321,7 +321,7 @@ en:
         browse_all: "Browse all partners"
       events:
         kicker: "Tonight & this week"
-        heading: "Happening around the UK"
+        heading: "Happening near you"
         filter_by_place: "Filter events by place"
       cta:
         what_is:
@@ -334,10 +334,10 @@ en:
           link: "Get in touch"
     events:
       index:
-        description: "Discover %{count} upcoming events and activities from community organisations across the UK on PlaceCal."
+        description: "Discover %{count} upcoming events and activities from community organisations in your area on PlaceCal."
         hero_title: "Events on PlaceCal"
         hero_subtitle: "A nationwide event feed is a lot. Narrow down by place, interest, or partnership to see what's coming up near you."
-        kicker: "%{count} upcoming events across the UK"
+        kicker: "%{count} upcoming events near you"
         search_placeholder: "Event name or keyword…"
         period_label: "Time range"
         periods:
@@ -457,9 +457,9 @@ en:
           button: "Get in touch"
     partners:
       index:
-        description: "Browse %{count} community partners across the UK on PlaceCal. Search by name, category, partnership or neighbourhood."
+        description: "Browse %{count} community partners in your area on PlaceCal. Search by name, category, partnership or neighbourhood."
         hero_title: "All partners on PlaceCal"
-        hero_subtitle: "Every community group, venue, library and organisation publishing their events on PlaceCal, UK-wide."
+        hero_subtitle: "Every community group, venue, library and organisation publishing their events on PlaceCal."
         kicker: "%{count} partners across %{partnerships} partnerships"
         results:
           filtered: "Showing %{shown} of %{total} partners"
@@ -481,7 +481,7 @@ en:
     partnerships:
       index:
         hero_title: "Partnerships on PlaceCal"
-        hero_subtitle: "Discover local partnerships across the UK bringing communities together through PlaceCal. Each partnership runs its own calendar site, connecting the groups, events and services in their area."
+        hero_subtitle: "Discover local partnerships in your area bringing communities together through PlaceCal. Each partnership runs its own calendar site, connecting the groups, events and services in their area."
         hero_kicker: "%{count} partnerships serving %{partners} partners"
         search_placeholder: "Search partnerships…"
         search_button: "Search"
@@ -842,11 +842,24 @@ en:
       long_running_day: "%-d"
       # Full dates in admin notices, e.g. "November 9, 2026"
       day_month_year: "%B %-d, %Y"
-
+      # Short date for text/simple listings and CSV export, e.g. "Nov 21"
+      event_date: "%b %-d"
+      # Short date with year, e.g. "Nov 21, 2026"
+      event_date_year: "%b %-d, %Y"
   time:
     formats:
       og_date: "%A, %B %-d, %Y"
       og_time: "%-l:%M%P"
+      # 12-hour clock for event times: "7pm" on the hour, "7:30pm" otherwise
+      event_clock: "%-l%P"
+      event_time: "%-l:%M%P"
+      # Admin tables, e.g. "Fri, Nov 20, 2026 7:30pm"
+      event_datetime: "%a, %b %-d, %Y %-l:%M%P"
+      # Admin previews, e.g. "Fri, Nov 20 7:30pm"
+      event_datetime_short: "%a, %b %-d %-l:%M%P"
+      # Event page hero/info chips, e.g. "Wed, Nov 9" / "Wed, Nov 9, 2026"
+      event_day_short: "%a, %b %-d"
+      event_day_short_year: "%a, %b %-d, %Y"
 
   # ===========================================================================
   # OPEN GRAPH SHARE CARDS

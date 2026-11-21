@@ -88,7 +88,7 @@ class Views::Admin::Calendars::FormTabPreview < Views::Admin::Base
         div(class: 'font-medium') { truncate(event.summary, length: 60) }
       end
       td(class: 'whitespace-nowrap text-sm') do
-        plain event.dtstart.strftime('%a %d %b %Y, %H:%M')
+        plain I18n.l(event.dtstart, format: :event_datetime)
       end
       td(class: 'text-sm text-base-content/70') do
         render_event_location(event)

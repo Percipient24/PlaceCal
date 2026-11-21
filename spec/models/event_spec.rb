@@ -143,12 +143,17 @@ RSpec.describe Event, type: :model do
   describe "#time" do
     it "gives the start and end" do
       event = build(:event, dtstart: Time.zone.local(2026, 11, 20, 19, 30), dtend: Time.zone.local(2026, 11, 20, 21, 30))
-      expect(event.time).to eq("19:30 – 21:30")
+      expect(event.time).to eq("7:30pm – 9:30pm")
     end
 
     it "gives only the start when the event ends as it starts, as for a feed with no end time" do
       event = build(:event, dtstart: Time.zone.local(2026, 11, 20, 19, 30), dtend: Time.zone.local(2026, 11, 20, 19, 30))
-      expect(event.time).to eq("19:30")
+      expect(event.time).to eq("7:30pm")
+    end
+
+    it "drops the minutes on the hour, e.g. 7pm" do
+      event = build(:event, dtstart: Time.zone.local(2026, 11, 20, 19, 0), dtend: Time.zone.local(2026, 11, 20, 21, 0))
+      expect(event.time).to eq("7pm – 9pm")
     end
   end
 
@@ -167,7 +172,7 @@ RSpec.describe Event, type: :model do
     it "puts a single space before a one-digit date" do
       event = build(:event, summary: "Tea Dance", organiser: nil,
                             dtstart: Time.zone.local(2026, 11, 2, 14), dtend: Time.zone.local(2026, 11, 2, 16))
-      expect(event.og_title).to eq("Tea Dance, 2 Nov, 14:00 – 16:00")
+      expect(event.og_title).to eq("Tea Dance, Nov 2, 2pm – 4pm")
     end
 
     it "gives the dates of a long-running event in place of its times" do
@@ -179,7 +184,7 @@ RSpec.describe Event, type: :model do
     it "leaves out the times of an all-day event" do
       event = build(:event, summary: "Bin collection", organiser: nil,
                             dtstart: Time.zone.local(2026, 11, 2), dtend: Time.zone.local(2026, 11, 3))
-      expect(event.og_title).to eq("Bin collection, 2 Nov")
+      expect(event.og_title).to eq("Bin collection, Nov 2")
     end
   end
 

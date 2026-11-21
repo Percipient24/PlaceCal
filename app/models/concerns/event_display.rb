@@ -41,23 +41,29 @@ module EventDisplay
   # Feeds without an end time give one equal to the start
   def ends? = dtend.present? && dtend != dtstart
 
-  # @return [String] formatted time range, e.g. "09:00 – 10:00"
+  # @return [String] formatted time range, e.g. "7:30pm – 9:30pm"
   def time
     if ends?
-      "#{dtstart.strftime('%H:%M')} – #{dtend.strftime('%H:%M')}"
+      "#{format_event_clock(dtstart)} – #{format_event_clock(dtend)}"
     else
-      dtstart.strftime('%H:%M')
+      format_event_clock(dtstart)
     end
   end
 
-  # @return [String] short date, e.g. "1 Jan"
-  def date
-    dtstart.strftime('%-d %b')
+  # 12-hour clock from the locale formats: "7pm" on the hour, "7:30pm" otherwise
+  # @return [String]
+  def format_event_clock(value)
+    value.strftime(value.min.zero? ? I18n.t('time.formats.event_clock') : I18n.t('time.formats.event_time'))
   end
 
-  # @return [String] date with year, e.g. "1 Jan 2026"
+  # @return [String] short date, e.g. "Nov 21"
+  def date
+    I18n.l(dtstart.to_date, format: :event_date)
+  end
+
+  # @return [String] date with year, e.g. "Nov 21, 2026"
   def date_year
-    dtstart.strftime('%-d %b %Y')
+    I18n.l(dtstart.to_date, format: :event_date_year)
   end
 
   # @return [String] Open Graph title combining summary, date, time, and organiser

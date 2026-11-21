@@ -74,7 +74,7 @@ class Views::Admin::Articles::FormTabText < Views::Admin::Base
         raw icon(:calendar, size: '4', css_class: 'text-gray-600')
 
         if article.published_at.present?
-          span(class: 'text-base-content') { article.published_at.strftime('%d %b %Y') }
+          span(class: 'text-base-content') { I18n.l(article.published_at.to_date, format: :day_month_year) }
           span(class: 'text-gray-600 text-sm') do
             plain "(#{t('admin.time.ago', time: time_ago_in_words(article.published_at))})"
           end

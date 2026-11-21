@@ -16,7 +16,7 @@ PLAYWRIGHT_CLI = ENV.fetch("PLAYWRIGHT_CLI_EXECUTABLE_PATH") { Rails.root.join("
       deviceScaleFactor: 1,
       reducedMotion: "reduce",
       locale: "en-GB",
-      timezoneId: "Europe/London"
+      timezoneId: "America/New_York"
     )
   end
 end

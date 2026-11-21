@@ -38,11 +38,11 @@ module Types
 
         argument :postcode, String,
                  required: false,
-                 description: 'A UK postcode, e.g. "M15 5FS". Shows events in its ward, or by organisers based or working there when the event has no address.'
+                 description: 'A US ZIP code, e.g. "14546" (UK postcodes like "M15 5FS" also work). Shows events in its area, or by organisers based or working there when the event has no address.'
 
         argument :place, String,
                  required: false,
-                 description: 'A UK place name: ward, district, county or region, e.g. "Hulme" or "Manchester". ' \
+                 description: 'A neighbourhood name: ward, district, county or region, e.g. "Scottsville" or "Monroe County". ' \
                               'Add the wider area after a comma where names repeat, e.g. "Castle, Cambridge". Matches events like `postcode`.'
 
         argument :query, String,

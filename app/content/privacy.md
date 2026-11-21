@@ -1,3 +1,5 @@
+As a disclaimer ... The Scottsville Collective still needs to update this policy, which is in place from the original open source project (Geeks for Social Change / PlaceCal). The spirit of our policy will be similar, but the details will be different.
+
 At PlaceCal.org, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains the types of information that are collected and recorded by PlaceCal.org and how we use it.
 
 If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us through email at [support@placecal.org](mailto:support@placecal.org).
@@ -28,13 +30,13 @@ Most of the personal information we process is provided to us directly by you fo
 
 We use the information that you have given us in order to share this information with those browsing the site and viewing organisations and their calendars.
 
-Under the UK General Data Protection Regulation (UK GDPR), the lawful basis we rely on for processing this information is your consent.
+Under applicable data protection law (including the EU/UK GDPR where it applies and US state privacy laws such as the California Consumer Privacy Act), the lawful basis we rely on for processing this information is your consent.
 
 You are able to remove your consent at any time. You can do this by contacting [support@placecal.org](mailto:support@placecal.org).
 
 ### How we store your personal information
 
-Your information is securely stored on our server in London, UK.
+Your information is securely stored on our servers in the United States.
 
 We keep personal identifiers, contacts and characteristics (as described in the "Type of information we collect" section above) for as long as this information is relevant – meaning as long as a partner, user or calendar this information is associated with is active. 'Active' in this sense refers to being a live account which can be logged into by the user, a partner with an associated calendar, or a linked calendar with a working source.
 
@@ -60,20 +62,7 @@ Please contact us at [support@placecal.org](mailto:support@placecal.org) if you 
 
 If you have any concerns about our use of your personal information, you can make a complaint to us at [support@placecal.org](mailto:support@placecal.org).
 
-You can also complain to the ICO if you are unhappy with how we have used your data.
-
-The ICO's address:
-
-Information Commissioner's Office  
-Wycliffe House  
-Water Lane  
-Wilmslow  
-Cheshire  
-SK9 5AF
-
-Helpline number: [0303 123 1113](tel:0303-123-1113)
-
-ICO website: [https://www.ico.org.uk](https://www.ico.org.uk)
+If you are in the UK or EEA, you can also complain to the ICO ([https://www.ico.org.uk](https://www.ico.org.uk)). If you are in the US, you can complain to your state Attorney General.
 
 ## Web Tracking
 

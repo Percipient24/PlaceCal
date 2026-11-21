@@ -159,7 +159,7 @@ class ArticleDatatable < Datatable
     end
 
     <<~HTML.html_safe # rubocop:disable Rails/OutputSafety
-      <span class="text-gray-500 text-sm whitespace-nowrap" title="#{datetime.strftime('%d %b %Y at %H:%M')}">#{relative}</span>
+      <span class="text-gray-500 text-sm whitespace-nowrap" title="#{I18n.l(datetime, format: :event_datetime)}">#{relative}</span>
     HTML
   end
 end

@@ -248,7 +248,7 @@ class Views::Admin::Pages::Home < Views::Admin::Base
               div(class: 'flex-1 min-w-0') do
                 span(class: 'text-sm font-medium text-base-content wrap-break-word min-w-0') { event.summary }
                 p(class: 'text-xs text-gray-600 wrap-break-word min-w-0') do
-                  plain event.dtstart.strftime('%H:%M')
+                  plain event.format_event_clock(event.dtstart)
                   plain " \u00B7 #{event.organiser.name}" if event.organiser
                 end
               end

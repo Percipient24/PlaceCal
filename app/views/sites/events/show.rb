@@ -144,7 +144,7 @@ class Views::Sites::Events::Show < Views::Base
       if long_running?(event)
         hero_chip(:event_date, date_range_text(event), struck: event.called_off?)
       else
-        hero_chip(:event_date, event.dtstart.strftime('%a %-e %b'), struck: event.called_off?)
+        hero_chip(:event_date, I18n.l(event.dtstart, format: :event_day_short), struck: event.called_off?)
         render_hero_time
       end
       hero_chip(:event_repeats, event.repeat_frequency) if event.repeat_frequency
@@ -163,10 +163,10 @@ class Views::Sites::Events::Show < Views::Base
     UI::Pill(variant: :overlay) do
       raw(view_context.icon(:event_time, size: nil, css_class: 'w-3.5 h-3.5 shrink-0 opacity-80'))
       span(class: ('line-through' if event.called_off?)) do
-        time(class: 'dt-start', datetime: event.dtstart.iso8601) { event.dtstart.strftime('%H:%M') }
+        time(class: 'dt-start', datetime: event.dtstart.iso8601) { event.format_event_clock(event.dtstart) }
         if event.ends?
           plain ' – '
-          time(class: 'dt-end', datetime: event.dtend.iso8601) { event.dtend.strftime('%H:%M') }
+          time(class: 'dt-end', datetime: event.dtend.iso8601) { event.format_event_clock(event.dtend) }
         end
       end
     end
@@ -227,7 +227,7 @@ class Views::Sites::Events::Show < Views::Base
         if long_running?(event)
           info_row(:event_date, struck: event.called_off?) { date_range_text(event) }
         else
-          info_row(:event_date, struck: event.called_off?) { event.dtstart.strftime('%a %-e %b %Y') }
+          info_row(:event_date, struck: event.called_off?) { I18n.l(event.dtstart, format: :event_day_short_year) }
           info_row(:event_time, struck: event.called_off?) { event.time }
         end
         info_row(:event_repeats) { event.repeat_frequency } if event.repeat_frequency

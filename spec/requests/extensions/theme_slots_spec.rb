@@ -293,7 +293,7 @@ RSpec.describe "Theme slots", type: :request do
     aggregate_failures "show page and partners" do
       get "http://plain.lvh.me/events/#{event.id}"
       expect(response.body).not_to include('data-part="kicker"')
-      expect(response.body).to include(" 9 Nov")
+      expect(response.body).to include("Nov 9")
 
       # Core sites carry their own partners heading (the outline would skip a
       # level without it); what must not leak is the fixture theme's wording.

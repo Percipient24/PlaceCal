@@ -245,8 +245,8 @@ module SeedPartners # rubocop:disable Metrics/ModuleLength
 
   def self.add_metadata(partner, type, ward_name, idx)
     handle = slug_for(partner.name)
-    # Generate realistic-looking 0161 (Manchester-style) numbers
-    phone_a = format('%03d', ((idx * 7) + 100) % 1000)
+    # Generate realistic-looking US (NANP) numbers in the 585 area code (Scottsville, NY)
+    phone_a = format('%03d', 200 + ((idx * 7) % 800))
     phone_b = format('%04d', ((idx * 13) + 1000) % 10_000)
 
     partner.update_columns( # rubocop:disable Rails/SkipsModelValidations
@@ -257,12 +257,12 @@ module SeedPartners # rubocop:disable Metrics/ModuleLength
         "https://bsky.app/profile/#{handle}.bsky.social",
         "https://social.example.org/@#{handle}"
       ],
-      public_phone: "0161 #{phone_a} #{phone_b}",
+      public_phone: "(585) #{phone_a}-#{phone_b}",
       public_email: "hello@#{partner.slug}.example.org",
       public_name: partner.name,
       partner_email: "admin@#{partner.slug}.example.org",
       partner_name: "#{ward_name} Admin",
-      partner_phone: "0161 #{phone_a} #{phone_b.reverse}",
+      partner_phone: "(585) #{phone_a}-#{phone_b.reverse}",
       opening_times: [
         { 'dayOfWeek' => 'https://schema.org/Monday', 'opens' => '09:00', 'closes' => '17:00' },
         { 'dayOfWeek' => 'https://schema.org/Tuesday', 'opens' => '09:00', 'closes' => '17:00' },

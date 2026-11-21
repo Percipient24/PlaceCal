@@ -30,8 +30,8 @@ class Components::Admin::EventsTable < Components::Admin::Base
   def render_row(event)
     tr(class: 'hover') do
       td(class: 'whitespace-nowrap') do
-        div(class: 'font-semibold text-sm') { event.dtstart.strftime('%d %b') }
-        div(class: 'text-xs text-gray-600') { event.dtstart.strftime(past ? '%Y' : '%H:%M') }
+        div(class: 'font-semibold text-sm') { I18n.l(event.dtstart.to_date, format: :event_date) }
+        div(class: 'text-xs text-gray-600') { past ? event.dtstart.year.to_s : event.format_event_clock(event.dtstart) }
       end
       td do
         link_to truncate(event.summary, length: 70), admin_event_path(event), class: 'text-sm font-medium link link-hover'

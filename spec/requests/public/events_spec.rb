@@ -664,8 +664,8 @@ RSpec.describe "Public Events", type: :request do
       # Date and time render as hero chips per the directory design handoff.
       hero = Nokogiri::HTML(response.body).at_css("section.bg-foreground")
       expect(hero).to be_present
-      expect(hero.text).to include(event.dtstart.strftime("%a %-e %b"))
-      expect(hero.text).to include("16:00 – 17:00")
+      expect(hero.text).to include(event.dtstart.strftime("%a, %b %-d"))
+      expect(hero.text).to include("4pm – 5pm")
     end
 
     it "shows the event information card with date, time and neighbourhood" do
@@ -676,7 +676,7 @@ RSpec.describe "Public Events", type: :request do
                      address:)
       get event_url(event, host: "lvh.me")
       expect(response.body).to include("Event information")
-      expect(response.body).to include(event.dtstart.strftime("%a %-e %b %Y"))
+      expect(response.body).to include(event.dtstart.strftime("%a, %b %-d, %Y"))
       expect(response.body).to include(ward.shortname)
     end
 

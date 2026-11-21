@@ -195,7 +195,7 @@ class Partner < ApplicationRecord
             allow_blank: true
   validates :social_links, length: { maximum: MAX_SOCIAL_LINKS }
   validates :public_phone, :partner_phone,
-            format: { with: UK_NUMBER_REGEX, message: 'invalid phone number' },
+            format: { with: PHONE_REGEX, message: 'invalid phone number' },
             allow_blank: true
   validates :public_email, :partner_email,
             format: { with: EMAIL_REGEX, message: 'invalid email address' },

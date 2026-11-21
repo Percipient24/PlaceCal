@@ -145,7 +145,7 @@ class Views::Admin::Partners::FormTabPreview < Views::Admin::Base
                 div(class: 'font-medium') { truncate(event.summary, length: 50) }
               end
               td(class: 'whitespace-nowrap text-sm') do
-                plain event.dtstart.strftime('%a %d %b %H:%M')
+                plain I18n.l(event.dtstart, format: :event_datetime_short)
               end
               td do
                 if event.calendar

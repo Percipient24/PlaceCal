@@ -149,6 +149,36 @@ RSpec.describe Partner, type: :model do
       end
     end
 
+    describe "phone numbers" do
+      let(:partner) { build(:partner) }
+
+      it "accepts US (NANP) numbers, e.g. Scottsville NY" do
+        ["585-292-1234", "(585) 292-1234", "+1 585 292 1234", "5852921234"].each do |number|
+          partner.public_phone = number
+          partner.valid?
+          expect(partner.errors[:public_phone]).to be_empty, "expected #{number.inspect} to be valid"
+        end
+      end
+
+      it "still accepts UK numbers" do
+        partner.public_phone = "0161 234 5678"
+        partner.valid?
+        expect(partner.errors[:public_phone]).to be_empty
+      end
+
+      it "rejects numbers that are neither UK nor US format" do
+        partner.public_phone = "12345"
+        expect(partner).not_to be_valid
+        expect(partner.errors[:public_phone]).to include("invalid phone number")
+      end
+
+      it "allows blank phone" do
+        partner.public_phone = ""
+        partner.valid?
+        expect(partner.errors[:public_phone]).to be_empty
+      end
+    end
+
     describe "social_links" do
       let(:partner) { build(:partner) }
 

@@ -33,6 +33,13 @@ module SeedSites # rubocop:disable Metrics/ModuleLength
       theme: :green,
       hero_image: 'normal_island_hero.jpg',
       logo: 'book_clubs_logo.svg'
+    },
+    scottsville: {
+      place_name: 'Scottsville, NY',
+      hero_text: 'Everything happening in Scottsville, NY',
+      theme: :pink,
+      hero_image: 'scottsville_hero.jpg',
+      logo: 'scottsville_logo.svg'
     }
   }.freeze
 
@@ -123,6 +130,16 @@ module SeedSites # rubocop:disable Metrics/ModuleLength
       neighbourhood: Neighbourhood.find_by(name: 'Normal Island', unit: 'country')
     )
     assign_partnership_tag(book_clubs, 'Normal Island Book Clubs')
+
+    # Scottsville, NY (USA) — the real geography this deployment runs for;
+    # its neighbourhood is seeded by 002_scottsville.rb from config/geo/us_zips.yml
+    create_site(
+      slug: 'scottsville',
+      name: 'Scottsville',
+      tagline: "What's on in Scottsville, NY",
+      data_key: :scottsville,
+      neighbourhood: Neighbourhood.find_by(unit_code_value: '14546')
+    )
   end
 end
 
