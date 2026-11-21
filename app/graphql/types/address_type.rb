@@ -10,10 +10,10 @@ module Types
           description: 'The first few lines of the address like: 123 Main St, Scottsville, NY 14546'
 
     field :address_locality, String,
-          description: 'The ward this address is in'
+          description: 'The neighbourhood (locality) this address is in, e.g. "Scottsville"'
 
     field :address_region, String,
-          description: 'The district this address is in'
+          description: 'The region/state this address is in, e.g. "New York"'
 
     field :address_country, String,
           method: :country_code,
@@ -43,7 +43,7 @@ module Types
     end
 
     def address_region
-      object.neighbourhood&.region
+      object.neighbourhood&.region&.name
     end
   end
 end

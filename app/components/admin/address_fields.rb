@@ -2,6 +2,8 @@
 
 class Components::Admin::AddressFields < Components::Admin::Base
   include ApplicationHelper
+  include MapHelper
+  include Phlex::Rails::Helpers::ImagePath
 
   prop :form, ActionView::Helpers::FormBuilder
   prop :partner, ::Partner
@@ -40,7 +42,69 @@ class Components::Admin::AddressFields < Components::Admin::Base
                   data: { action: 'click->partner-address#do_clear_address' }
         end
       end
+
+      render_pin_fields
     end
+  end
+
+  # The map pin editor: an OpenFreeMap embed (same as the public pages) starting
+  # at the geocoded best-guess for the address, with a draggable pin. The pin
+  # position is written into the latitude/longitude inputs below, so a manual
+  # tweak is submitted with the form and wins over re-geocoding on save.
+  def render_pin_fields
+    pin = pin_position
+    args = {
+      center: pin || default_map_center,
+      pin:,
+      zoom: pin ? 16 : 13,
+      iconUrl: image_path('icons/map/map-marker.png'),
+      shadowUrl: image_path('icons/map/map-shadow.png'),
+      styleUrl: map_style_url,
+      zoomIn: t('components.map.zoom_in'),
+      zoomOut: t('components.map.zoom_out'),
+      lookupUrl: lookup_admin_addresses_path
+    }.to_json.html_safe
+
+    div(class: 'mt-4', data: { controller: 'pin-editor', pin_editor_args_value: args }) do
+      fieldset(class: 'fieldset') do
+        legend(class: 'fieldset-legend') { t('admin.address.pin_legend') }
+        p(class: 'text-sm opacity-70 mt-1') { t('admin.address.pin_hint') }
+      end
+      div(role: 'region', aria_label: t('admin.address.pin_map_label'),
+          class: 'mt-2 h-80 border-5 border-rules rounded-card overflow-hidden z-0',
+          data: { pin_editor_target: 'map' })
+      div(class: 'grid grid-cols-2 gap-4 mt-2') do
+        fieldset(class: 'fieldset') do
+          label(for: @address_form.field_id(:latitude), class: 'fieldset-legend') { attr_label(:address, :latitude) }
+          raw(@address_form.input_field(:latitude, type: 'number', step: 'any',
+                                                   class: 'input input-bordered w-full bg-base-100',
+                                                   data: { pin_editor_target: 'latitude' }))
+        end
+        fieldset(class: 'fieldset') do
+          label(for: @address_form.field_id(:longitude), class: 'fieldset-legend') { attr_label(:address, :longitude) }
+          raw(@address_form.input_field(:longitude, type: 'number', step: 'any',
+                                                    class: 'input input-bordered w-full bg-base-100',
+                                                    data: { pin_editor_target: 'longitude' }))
+        end
+      end
+    end
+  end
+
+  # The address's saved coordinates, when both are present
+  def pin_position
+    return unless address.latitude.present? && address.longitude.present?
+
+    [address.latitude, address.longitude]
+  end
+
+  # Where the editor map opens when the address has no coordinates yet: the
+  # first locally-known ZIP's centroid (the deployment's own geography, e.g.
+  # Scottsville NY), falling back to the middle of the contiguous US.
+  def default_map_center
+    entry = UsZipLookup::LOCAL_ZIPS.find { |code, data| code != 'default' && data['latitude'] }
+    return [entry.last['latitude'].to_f, entry.last['longitude'].to_f] if entry
+
+    [39.8283, -98.5795]
   end
 
   def address

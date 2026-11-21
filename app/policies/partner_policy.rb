@@ -52,7 +52,7 @@ class PartnerPolicy < ApplicationPolicy
              :url, :opening_times, :can_be_assigned_events,
              { social_links: [],
                calendars_attributes: %i[id name source strategy _destroy],
-               address_attributes: %i[id street_address street_address2 street_address3 city postcode],
+               address_attributes: %i[id street_address street_address2 street_address3 city postcode latitude longitude],
                service_areas_attributes: %i[id neighbourhood_id _destroy],
                category_ids: [], facility_ids: [] }]
 

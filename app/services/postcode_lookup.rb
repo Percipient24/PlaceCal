@@ -14,10 +14,12 @@ module PostcodeLookup
   ].freeze
 
   # @param postcode [String] a US ZIP or a UK postcode
+  # @param street [String, nil] street line, for street-level US geocoding
+  # @param city [String, nil] city/town, for street-level US geocoding
   # @return [Hash, nil] the lookup result data (postcodes.io-shaped either way), or nil when it doesn't exist
   # @raise [Unavailable] when the lookup service isn't responding
-  def self.call(postcode)
-    return UsZipLookup.call(postcode) if PostalCode.us_zip?(postcode)
+  def self.call(postcode, street: nil, city: nil)
+    return UsZipLookup.call_address(postcode, street:, city:) if PostalCode.us_zip?(postcode)
 
     Geocoder.search(postcode).first&.data
   rescue *OUTAGE_ERRORS => e

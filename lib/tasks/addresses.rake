@@ -22,7 +22,7 @@ namespace :addresses do
     skipped = 0
 
     stale.find_each do |address|
-      res = PostcodeLookup.call(address.postcode)
+      res = PostcodeLookup.call(address.postcode, street: address.street_address, city: address.city)
       if res.nil?
         puts "  SKIP #{address.id} (#{address.postcode}) - postcode not found"
         skipped += 1
@@ -63,7 +63,7 @@ namespace :addresses do
     blank = 0
 
     scope.find_each do |address|
-      res = PostcodeLookup.call(address.postcode)
+      res = PostcodeLookup.call(address.postcode, street: address.street_address, city: address.city)
       district = res && res['admin_district']
 
       if res.nil?

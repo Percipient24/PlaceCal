@@ -8,8 +8,8 @@ RSpec.describe UsZipLookup do
       result = described_class.call("14546")
 
       expect(result["postcode"]).to eq("14546")
-      expect(result["latitude"]).to be_within(0.001).of(43.0333)
-      expect(result["longitude"]).to be_within(0.001).of(-77.7833)
+      expect(result["latitude"]).to be_within(0.001).of(43.0246)
+      expect(result["longitude"]).to be_within(0.001).of(-77.7743)
       expect(result["admin_district"]).to eq("Scottsville")
       expect(result["admin_county"]).to eq("Monroe County")
       expect(result["country"]).to eq("United States")
@@ -30,6 +30,62 @@ RSpec.describe UsZipLookup do
 
     it "returns nil for a non-ZIP" do
       expect(described_class.call("M15 5FS")).to be_nil
+    end
+  end
+
+  describe ".call_address" do
+    it "returns the ZIP-level local result in the test environment (hermetic, no network)" do
+      result = described_class.call_address("14546", street: "61 Main Street", city: "Scottsville")
+
+      expect(result["postcode"]).to eq("14546")
+      expect(result["latitude"]).to be_within(0.001).of(43.0246)
+      expect(result["codes"]).to eq("admin_ward" => "14546", "admin_district" => "14546")
+    end
+
+    it "returns nil for a non-ZIP" do
+      expect(described_class.call_address("M15 5FS", street: "1 High St")).to be_nil
+    end
+  end
+
+  describe ".street_level (US Census geocoder)" do
+    let(:census_url) { "https://geocoding.geo.census.gov/geocoder/locations/address" }
+
+    it "returns precise coordinates for a matched street address" do
+      stub_request(:get, census_url).with(query: hash_including(street: "61 Main Street", zip: "14546", city: "Scottsville"))
+                                    .to_return(status: 200, body: {
+                                      result: {
+                                        addressMatches: [{
+                                          coordinates: { x: -77.754542372393, y: 43.019490119796 },
+                                          addressComponents: { city: "SCOTTSVILLE", zip: "14546", state: "NY" },
+                                          matchedAddress: "61 MAIN ST, SCOTTSVILLE, NY, 14546"
+                                        }]
+                                      }
+                                    }.to_json)
+
+      result = described_class.street_level("14546", "61 Main Street", "Scottsville")
+
+      expect(result["latitude"]).to be_within(0.000001).of(43.019490119796)
+      expect(result["longitude"]).to be_within(0.000001).of(-77.754542372393)
+      expect(result["admin_district"]).to eq("Scottsville")
+      expect(result["codes"]["admin_ward"]).to eq("14546")
+    end
+
+    it "returns nil when the Census geocoder has no match, so callers fall back to the ZIP centroid" do
+      stub_request(:get, census_url).with(query: hash_including(zip: "14546"))
+                                    .to_return(status: 200, body: { result: { addressMatches: [] } }.to_json)
+
+      expect(described_class.street_level("14546", "999 Nowhere Rd", "Scottsville")).to be_nil
+    end
+
+    it "returns nil on network failure so callers fall back to the ZIP centroid" do
+      stub_request(:get, census_url).to_timeout
+
+      expect(described_class.street_level("14546", "61 Main Street", "Scottsville")).to be_nil
+    end
+
+    it "returns nil without a street line" do
+      expect(described_class.street_level("14546", nil, "Scottsville")).to be_nil
+      expect(described_class.street_level("14546", "", nil)).to be_nil
     end
   end
 

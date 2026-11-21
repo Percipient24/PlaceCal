@@ -71,9 +71,13 @@ RSpec.describe Address, type: :model do
   end
 
   describe "US ZIP code addresses (Scottsville, NY)" do
+    let!(:new_york) do
+      create(:neighbourhood, name: "New York", name_abbr: "NY", unit: :region, unit_code_key: "FIPS",
+                             unit_code_value: "36000000", level: 4)
+    end
     let!(:scottsville) do
       create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
-                             unit_code_value: "14546", level: 2)
+                             unit_code_value: "14546", level: 2, parent: new_york)
     end
 
     it "defaults country_code to US" do
@@ -85,9 +89,31 @@ RSpec.describe Address, type: :model do
 
       expect(address).to be_valid
       expect(address.neighbourhood).to eq(scottsville)
-      expect(address.latitude).to be_within(0.001).of(43.0333)
-      expect(address.longitude).to be_within(0.001).of(-77.7833)
+      expect(address.latitude).to be_within(0.001).of(43.0246)
+      expect(address.longitude).to be_within(0.001).of(-77.7743)
       expect(address.city).to eq("Scottsville")
+    end
+
+    it "keeps a manually adjusted pin when the address is geocoded" do
+      address = described_class.new(street_address: "23 Main St", postcode: "14546", country_code: "US",
+                                    latitude: 43.0111, longitude: -77.7555)
+
+      expect(address).to be_valid
+      # the pin set by hand wins over the geocoded one...
+      expect(address.latitude).to eq(43.0111)
+      expect(address.longitude).to eq(-77.7555)
+      # ...but the postcode is still resolved for the neighbourhood and city
+      expect(address.neighbourhood).to eq(scottsville)
+      expect(address.city).to eq("Scottsville")
+    end
+
+    it "re-geocodes the pin when both coordinates were cleared" do
+      address = described_class.create!(street_address: "23 Main St", postcode: "14546", city: "Scottsville",
+                                        country_code: "US", latitude: 43.0111, longitude: -77.7555)
+      address.update!(latitude: nil, longitude: nil, postcode: "14546-1234")
+
+      expect(address.reload.latitude).to be_within(0.001).of(43.0246)
+      expect(address.longitude).to be_within(0.001).of(-77.7743)
     end
 
     it "rejects a malformed postal code" do
@@ -95,6 +121,33 @@ RSpec.describe Address, type: :model do
 
       expect(address).not_to be_valid
       expect(address.errors[:postcode]).to include("not recognised as a postcode or ZIP code")
+    end
+
+    it "infers the state from the neighbourhood's region" do
+      address = described_class.new(street_address: "23 Main St", postcode: "14546", country_code: "US")
+      address.valid?
+
+      expect(address.us_address?).to be true
+      expect(address.state).to eq("NY")
+    end
+
+    it "formats US addresses as 'City, ST ZIP' on one line, not UK-style separate postcode line" do
+      address = described_class.new(street_address: "23 Main St", postcode: "14546", country_code: "US")
+      address.valid?
+
+      expect(address.all_address_lines).to eq(["23 Main St", "Scottsville, NY 14546"])
+      expect(address.to_s).to eq("23 Main St, Scottsville, NY 14546")
+    end
+
+    it "includes addressRegion in JSON-LD for US addresses only" do
+      address = described_class.new(street_address: "23 Main St", postcode: "14546", country_code: "US")
+      address.valid?
+      expect(address.to_json_ld["addressRegion"]).to eq("NY")
+
+      uk = described_class.new(street_address: "1 High St", city: "Millbrook", postcode: "ZZMB 1RS", country_code: "GB")
+      expect(uk.us_address?).to be false
+      expect(uk.to_json_ld).not_to have_key("addressRegion")
+      expect(uk.all_address_lines).to eq(["1 High St", "Millbrook", "ZZMB 1RS"])
     end
   end
 

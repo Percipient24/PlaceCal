@@ -168,9 +168,25 @@ class Address < ApplicationRecord
     street_lines.join(', ')
   end
 
+  # US addresses (ZIP postcode) format as "City, ST ZIP" on one line; UK keeps
+  # city and postcode on separate lines
   # @return [Array<String>] all non-blank lines including city and postcode
   def all_address_lines
-    [*street_lines, city, postcode].compact_blank
+    if us_address?
+      [*street_lines, city_state_zip_line].compact_blank
+    else
+      [*street_lines, city, postcode].compact_blank
+    end
+  end
+
+  # @return [Boolean] true for a US address (recognised by its ZIP postcode)
+  def us_address?
+    PostalCode.us_zip?(postcode)
+  end
+
+  # @return [String, nil] state abbreviation inferred from the neighbourhood's region, e.g. "NY"
+  def state
+    neighbourhood&.region&.name_abbr.presence
   end
 
   def to_s
@@ -185,6 +201,7 @@ class Address < ApplicationRecord
       '@type' => 'PostalAddress',
       'streetAddress' => full_street_address,
       'addressLocality' => city,
+      'addressRegion' => (state if us_address?),
       'postalCode' => postcode,
       'addressCountry' => country_code
     }.compact
@@ -193,6 +210,12 @@ class Address < ApplicationRecord
   private
 
   # ==== Private methods ====
+
+  # US convention puts city, state and ZIP on one line: "Scottsville, NY 14546"
+  # @return [String, nil]
+  def city_state_zip_line
+    [city, [state, postcode].compact_blank.join(' ')].compact_blank.join(', ').presence
+  end
 
   # Set the (lat,lon) and neighbourhood from address data.
   #
@@ -205,7 +228,7 @@ class Address < ApplicationRecord
   # details. We currently require the geocoding result to contain the key
   # 'admin_ward' from postcodes.io
   def geocode_with_ward
-    res = PostcodeLookup.call(postcode)
+    res = PostcodeLookup.call(postcode, street: street_address, city:)
     if res.nil?
       errors.add :postcode, :not_found
       return
@@ -220,10 +243,14 @@ class Address < ApplicationRecord
 
     self.neighbourhood = neighbourhood
 
-    # Standardise the lat and lng for each postcode
+    # Standardise the lat and lng for each postcode, unless the pin was moved by
+    # hand in the admin form (e.g. the geocoder's street interpolation is off).
+    # Clearing both coordinates counts as "no manual pin", so they're re-geocoded.
     # Makes it easier to catch dupes
-    self.longitude = res['longitude']
-    self.latitude = res['latitude']
+    if latitude.blank? || longitude.blank? || (!latitude_changed? && !longitude_changed?)
+      self.longitude = res['longitude']
+      self.latitude = res['latitude']
+    end
 
     # Existing addresses are backfilled via the addresses:backfill_city rake
     # task (see #3123).

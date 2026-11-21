@@ -217,6 +217,27 @@ RSpec.describe "Admin::Partners", type: :request do
         expect(response.body).to include("ZIP code")
       end
 
+      it "has a draggable pin map editor with latitude/longitude inputs in the address section" do
+        get edit_admin_partner_url(partner, host: admin_host)
+        expect(response.body).to include("Latitude")
+        expect(response.body).to include("Longitude")
+        expect(response.body).to include('name="partner[address_attributes][latitude]"')
+        expect(response.body).to include('name="partner[address_attributes][longitude]"')
+        expect(response.body).to include('data-controller="pin-editor"')
+        expect(response.body).to include('data-pin-editor-target="map"')
+        expect(response.body).to include('data-pin-editor-target="latitude"')
+        expect(response.body).to include('data-pin-editor-target="longitude"')
+        expect(response.body).to include("/addresses/lookup")
+      end
+
+      it "centres the pin editor on the partner's saved coordinates when present" do
+        address = partner.address
+        address.update!(latitude: 43.019490119796, longitude: -77.754542372393)
+        get edit_admin_partner_url(partner, host: admin_host)
+        expect(response.body).to include("43.019490119796")
+        expect(response.body).to include("-77.754542372393")
+      end
+
       it "has contact information section" do
         get edit_admin_partner_url(partner, host: admin_host)
         expect(response.body).to include("Public Contact")

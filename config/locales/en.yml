@@ -1002,6 +1002,8 @@ en:
         street_address: "Street Address"
         street_address_2: "Street Address 2"
         street_address_3: "Street Address 3"
+        latitude: "Latitude"
+        longitude: "Longitude"
 
       article:
         <<: *default_attrs

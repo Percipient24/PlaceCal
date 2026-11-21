@@ -68,6 +68,11 @@ Rails.application.routes.draw do
         delete :clear_address
       end
     end
+    resources :addresses, only: [] do
+      collection do
+        get :lookup
+      end
+    end
     resources :partnerships
     resources :sites
     resources :supporters

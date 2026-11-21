@@ -270,6 +270,11 @@ en:
     address:
       clear_address: "Clear Address"
       neighbourhood_label: "Neighbourhood"
+      pin_legend: "Map pin"
+      pin_hint: "The pin is placed automatically from the address, but can be a few doors off. Drag the pin (or click the map) to set the exact location. It recentres automatically when the address changes; clear both coordinates to go back to the automatic location."
+      pin_map_label: "Map for adjusting this address's pin location"
+      lookup_not_found: "That postcode or ZIP code could not be found"
+      lookup_unavailable: "The postcode lookup service is unavailable right now, please try again later"
 
     # Service areas
     service_areas:

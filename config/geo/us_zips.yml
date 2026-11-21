@@ -6,14 +6,16 @@
 # Keys are 5-digit ZIPs. The special 'default' entry is the stub returned for any
 # unlisted ZIP in the test environment, so specs never hit the network.
 
-# Scottsville, NY (Monroe County) — ZIP centroid
+# Scottsville, NY (Monroe County) — ZIP centroid (zippopotam.us). Used as the
+# fallback pin when street-level geocoding has no match; street-level coords
+# come from the US Census geocoder (see UsZipLookup.street_level).
 14546:
   place: Scottsville
   county: Monroe County
   state: NY
   state_name: New York
-  latitude: 43.0333
-  longitude: -77.7833
+  latitude: 43.0246
+  longitude: -77.7743
 
 default:
   place: Testville
