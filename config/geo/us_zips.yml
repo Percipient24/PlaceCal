@@ -1,0 +1,24 @@
+# US ZIP codes PlaceCal resolves locally, with no network call. This file is the
+# source of truth for the geography this deployment covers: add a ZIP here (with
+# its place/county and a representative lat/long) and a matching Neighbourhood
+# seeded with that ZIP as its unit_code_value (see db/seeds/002_scottsville.rb).
+#
+# Keys are 5-digit ZIPs. The special 'default' entry is the stub returned for any
+# unlisted ZIP in the test environment, so specs never hit the network.
+
+# Scottsville, NY (Monroe County) — ZIP centroid
+14546:
+  place: Scottsville
+  county: Monroe County
+  state: NY
+  state_name: New York
+  latitude: 43.0333
+  longitude: -77.7833
+
+default:
+  place: Testville
+  county: Test County
+  state: NY
+  state_name: New York
+  latitude: 43.0
+  longitude: -77.8

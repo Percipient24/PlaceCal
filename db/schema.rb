@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_220815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "addresses", force: :cascade do |t|
     t.string "city"
-    t.string "country_code", default: "UK", null: false
+    t.string "country_code", default: "US", null: false
     t.float "latitude"
     t.float "longitude"
     t.bigint "neighbourhood_id"

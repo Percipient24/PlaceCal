@@ -221,7 +221,7 @@ en:
     applied:
       date: "Showing %{date}"
       from_date: "From %{date}"
-      date_format: "%a %-d %b"
+      date_format: "%a, %b %-d"
       sorted_by_name: "Sorted by name"
       # One for each unticked event type
       types_hidden:
@@ -740,10 +740,10 @@ en:
       subscribe_ical: "Subscribe to %{name} with iCal"
     card:
       # strftime patterns for the event list date; themes may override
-      date_format: "%e %b"
-      date_format_with_year: "%e %b %Y"
+      date_format: "%b %-d"
+      date_format_with_year: "%b %-d, %Y"
       # A multi-day event's end date, shown before its end time
-      end_date_format: "%-d %b"
+      end_date_format: "%b %-d"
       # Text before the organiser link in the event list, blank in core
       organiser_prefix: ""
       online: "Online"
@@ -762,10 +762,10 @@ en:
         yearly: "Yearly"
     page:
       # strftime patterns for the event page date; %o is the ordinal day
-      date_format: "%e %b"
-      date_format_with_year: "%e %b %Y"
+      date_format: "%b %-d"
+      date_format_with_year: "%b %-d, %Y"
       # A multi-day event's end date, shown before its end time
-      end_date_format: "%-d %b"
+      end_date_format: "%b %-d"
     show:
       status_notice:
         cancelled: "This event has been cancelled."
@@ -777,7 +777,7 @@ en:
       meta_description_organiser: "%{summary} on %{date}, run by %{organiser}."
       meta_description_place: "%{summary} on %{date} at %{place}."
       meta_description_organiser_place: "%{summary} on %{date}, run by %{organiser} at %{place}."
-      meta_date_format: "%A %-d %B"
+      meta_date_format: "%A, %B %-d"
       contact_heading: "Contact information"
       visit_webpage: "Visit the webpage for this event"
       book_tickets: "Book tickets"
@@ -826,25 +826,26 @@ en:
 
   date:
     formats:
-      datetime: "%b %-d, %Y %l:%M"
-      # Day headings in event lists, e.g. "Wednesday 9 November"
-      event_day: "%A %-d %B"
-      # Paginator tabs, e.g. "Wed 9 Nov", "Nov", "Nov 2027", and week ranges "9 - 15 Nov"
-      timeline_day: "%a %-d %b"
+      # US style: month first, 12-hour clock with AM/PM
+      datetime: "%b %-d, %Y %l:%M %P"
+      # Day headings in event lists, e.g. "Wednesday, November 9"
+      event_day: "%A, %B %-d"
+      # Paginator tabs, e.g. "Wed, Nov 9", "Nov", "Nov 2027", and week ranges "Nov 9 - 15"
+      timeline_day: "%a, %b %-d"
       timeline_month: "%b"
       timeline_month_year: "%b %Y"
       timeline_week_start: "%-d"
-      timeline_day_month: "%-d %b"
-      # A long-running event's dates, e.g. "17 Jan 2027"
-      long_running: "%-d %b %Y"
-      long_running_no_year: "%-d %b"
+      timeline_day_month: "%b %-d"
+      # A long-running event's dates, e.g. "Jan 17, 2027"
+      long_running: "%b %-d, %Y"
+      long_running_no_year: "%b %-d"
       long_running_day: "%-d"
-      # Full dates in admin notices, e.g. "9 November 2026"
-      day_month_year: "%-d %B %Y"
+      # Full dates in admin notices, e.g. "November 9, 2026"
+      day_month_year: "%B %-d, %Y"
 
   time:
     formats:
-      og_date: "%A %-d %B %Y"
+      og_date: "%A, %B %-d, %Y"
       og_time: "%-l:%M%P"
 
   # ===========================================================================
@@ -972,7 +973,7 @@ en:
         website: "Website"
         address: "Address"
         city: "City"
-        postcode: "Postcode"
+        postcode: "ZIP code"
         created_at: "Created"
         updated_at: "Updated"
         status: "Status"
@@ -1064,7 +1065,7 @@ en:
             postcode:
               not_found: "was not found"
               unmapped: "has been found but could not be mapped to a neighbourhood at this time"
-              lookup_unavailable: "couldn't be checked because the postcode lookup service isn't responding. Please try again later"
+              lookup_unavailable: "couldn't be checked because the postal code lookup service isn't responding. Please try again later"
         event:
           attributes:
             base:

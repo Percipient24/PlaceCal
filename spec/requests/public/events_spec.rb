@@ -419,21 +419,21 @@ RSpec.describe "Public Events", type: :request do
       get events_url(host: "#{site.slug}.lvh.me", period: "day", format: :text)
     end
 
-    it "uses the London date at 00:30 BST" do
-      now = Time.zone.local(2026, 7, 15, 0, 30)
+    it "uses the New York date at 02:00 UTC, when the UTC date is a day ahead" do
+      now = Time.utc(2026, 7, 15, 2, 0) # 2026-07-14 22:00 in New York (EDT)
       Timecop.freeze(now) do
-        # Guard: the system clock really is a day behind the app's
-        expect(Date.today).to eq(Date.new(2026, 7, 14)) # rubocop:disable Rails/Date
-        expect(Time.zone.today).to eq(Date.new(2026, 7, 15))
+        # Guard: the system clock really is a day ahead of the app's
+        expect(Date.today).to eq(Date.new(2026, 7, 15)) # rubocop:disable Rails/Date
+        expect(Time.zone.today).to eq(Date.new(2026, 7, 14))
       end
 
-      day_listing_at(now, today: Date.new(2026, 7, 15), yesterday: Date.new(2026, 7, 14))
+      day_listing_at(now, today: Date.new(2026, 7, 14), yesterday: Date.new(2026, 7, 13))
 
       expect(response.body).to include("Today's event")
       expect(response.body).not_to include("Yesterday's event")
     end
 
-    it "uses the same date at 00:30 GMT, when London and UTC agree" do
+    it "uses the same date at 00:30 EST, when New York and UTC agree" do
       day_listing_at(Time.zone.local(2026, 1, 15, 0, 30), today: Date.new(2026, 1, 15), yesterday: Date.new(2026, 1, 14))
 
       expect(response.body).to include("Today's event")

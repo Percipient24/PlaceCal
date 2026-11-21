@@ -85,11 +85,11 @@ RSpec.describe UnlistedVenuesReport do
         Upcoming events with a location: 3
         Events at venues that match no partner: 2
         Venues that match no partner: 1
-        Events with no postcode: 1
+        Events with no ZIP code: 1
 
-        Postcode  First line     Events  Calendars  Sample location
+        ZIP code  First line     Events  Calendars  Sample location
         ZZMB 2OT  Oak Hall            2          1  Oak Hall, ZZMB 2OT
-                  (no postcode)       1          1  The park by the river
+                  (no ZIP code)       1          1  The park by the river
       TEXT
     end
   end
@@ -101,9 +101,9 @@ RSpec.describe UnlistedVenuesReport do
       csv = CSV.parse(described_class.new.to_csv)
 
       expect(csv).to eq([
-                          ["Postcode", "First line", "Events", "Calendars", "Sample location"],
+                          ["ZIP code", "First line", "Events", "Calendars", "Sample location"],
                           ["ZZMB 2OT", "Oak Hall", "1", "1", "Oak Hall, ZZMB 2OT"],
-                          [nil, "(no postcode)", "0", "0", nil]
+                          [nil, "(no ZIP code)", "0", "0", nil]
                         ])
     end
   end

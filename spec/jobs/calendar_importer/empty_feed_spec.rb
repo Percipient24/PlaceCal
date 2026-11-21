@@ -42,7 +42,7 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with an empty feed" do
 
     expect(Event.exists?(upcoming_event.id)).to be(true)
     expect(calendar.feed_empty_since).to be_within(1.minute).of(Time.current)
-    expect(calendar.notices.join).to include("no events since 8 November 2022", "upcoming event stays listed until 10 November 2022")
+    expect(calendar.notices.join).to include("no events since November 8, 2022", "upcoming event stays listed until November 10, 2022")
   end
 
   it "keeps the events, the first date and the notice on later imports of the same empty feed", :aggregate_failures do
@@ -55,7 +55,7 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with an empty feed" do
 
     expect(Event.exists?(upcoming_event.id)).to be(true)
     expect(calendar.feed_empty_since).to eq(first_date)
-    expect(calendar.notices.join).to include("no events since 8 November 2022")
+    expect(calendar.notices.join).to include("no events since November 8, 2022")
   end
 
   it "keeps the first date when the feed changes but is still empty" do
@@ -80,18 +80,18 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with an empty feed" do
     expect(calendar.notices.join).to include("upcoming events have been removed")
 
     import
-    expect(calendar.notices).to eq(["The feed has had no events since 8 November 2022."])
+    expect(calendar.notices).to eq(["The feed has had no events since November 8, 2022."])
   end
 
   it "says the feed is empty, without claiming a removal, when nothing is upcoming", :aggregate_failures do
     upcoming_event.destroy!
     serve(empty_feed)
     import
-    expect(calendar.notices).to eq(["The feed has had no events since 8 November 2022."])
+    expect(calendar.notices).to eq(["The feed has had no events since November 8, 2022."])
 
     Timecop.freeze(8.days.from_now)
     import
-    expect(calendar.notices).to eq(["The feed has had no events since 8 November 2022."])
+    expect(calendar.notices).to eq(["The feed has had no events since November 8, 2022."])
   end
 
   it "doesn't act on an empty feed whose calendar was edited during the import", :aggregate_failures do

@@ -71,7 +71,18 @@ RSpec.describe EventSearch do
                                        .and_return([double(data: { "codes" => { "admin_ward" => riverside.unit_code_value } })])
 
     expect(search(postcode: "m15 5fs")).to eq([event])
-    expect { search(postcode: "not a postcode") }.to raise_error(EventSearch::Error, /isn't a UK postcode/)
+    expect { search(postcode: "not a postcode") }.to raise_error(EventSearch::Error, /isn't a postcode or ZIP code/)
+  end
+
+  it "resolves a US ZIP code to its neighbourhood" do
+    scottsville = create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
+                                         unit_code_value: "14546", level: 2)
+    event = create(:event, organiser: oldtown_partner, address: create(:address, neighbourhood: scottsville))
+    create(:event, organiser: oldtown_partner, address: in_riverside)
+
+    expect(search(postcode: "14546")).to eq([event])
+    expect(search(postcode: "14546-1234")).to eq([event])
+    expect { search(postcode: "ABCDE") }.to raise_error(EventSearch::Error, /isn't a postcode or ZIP code/)
   end
 
   it "narrows by keyword and category" do

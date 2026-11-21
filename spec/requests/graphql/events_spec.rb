@@ -216,7 +216,8 @@ RSpec.describe "GraphQL Events", type: :request do
     it "accepts a fromDate up to a year before today" do
       past_event = create(:event, organiser: partner, dtstart: 11.months.ago, address:)
 
-      result = execute_query(query, variables: { fromDate: 1.year.ago.strftime("%Y-%m-%d 00:00") })
+      # A day inside the one-year window; noon keeps it clear of the UTC/local boundary in any timezone
+      result = execute_query(query, variables: { fromDate: (1.year.ago + 1.day).strftime("%Y-%m-%d 12:00") })
 
       expect(result["errors"]).to be_nil
       expect(result["data"]["eventsByFilter"].pluck("id")).to include(past_event.id.to_s)

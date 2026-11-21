@@ -6,11 +6,13 @@ class EventSearch
   class Error < StandardError; end
 
   UK_POSTCODE = /\A[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}\z/
+  POSTCODE = /\A(#{UK_POSTCODE.source}|\d{5}(-\d{4})?)\z/
 
   # @param from [Time] earliest start; defaults to the start of today
   # @param to [Time, nil] start cut-off
-  # @param filters [Hash] optional :postcode (UK, resolved to its ward), :place (a ward,
-  #   district, county or region name, optionally "Name, Area" to pick one of several),
+  # @param filters [Hash] optional :postcode (UK postcode or US ZIP, resolved to its
+  #   neighbourhood), :place (a ward, district, county or region name, optionally
+  #   "Name, Area" to pick one of several),
   #   :query (text in titles and descriptions), :category
   def initialize(from: nil, to: nil, **filters)
     filters.assert_valid_keys(:postcode, :place, :query, :category)
@@ -56,7 +58,7 @@ class EventSearch
     return [] unless @postcode
 
     postcode = @postcode.upcase.delete(' ')
-    raise Error, "#{@postcode} isn't a UK postcode" unless postcode.match?(UK_POSTCODE)
+    raise Error, "#{@postcode} isn't a postcode or ZIP code" unless postcode.match?(POSTCODE)
 
     neighbourhood = Neighbourhood.find_by(id: cached_postcode_neighbourhood_id(postcode))
     raise Error, "No PlaceCal area found for #{@postcode}" unless neighbourhood
@@ -84,7 +86,7 @@ class EventSearch
     current = matches.where(release_date: Neighbourhood::LATEST_RELEASE_DATE)
     found = (current.exists? ? current : matches).to_a
     found = within_area(found, within) if within.present?
-    raise Error, "No PlaceCal area called #{@place}. Try a UK ward, district or county name, or a postcode" if found.empty?
+    raise Error, "No PlaceCal area called #{@place}. Try a neighbourhood name or a postcode/ZIP code" if found.empty?
 
     found
   end

@@ -87,8 +87,9 @@ class Neighbourhood < ApplicationRecord
   # validates :unit_code_value, presence: true, uniqueness: true
   # validates :name, presence: true
   validates :level, inclusion: { in: LEVELS.values }, allow_nil: true
+  # ONS codes are 9 chars; US ZIP codes used as unit_code_value are 5
   validates :unit_code_value,
-            length: { is: 9 },
+            length: { in: 5..9 },
             allow_blank: true
 
   # ==== Scopes ====

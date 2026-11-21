@@ -10,12 +10,12 @@ module EventJsonLd
       '@type' => 'Event',
       '@id' => event_url,
       'name' => summary,
-      'startDate' => dtstart.in_time_zone('Europe/London').iso8601,
+      'startDate' => dtstart.in_time_zone(Time.zone).iso8601,
       'url' => event_url,
       'eventStatus' => json_ld_event_status
     }
 
-    data['endDate'] = dtend.in_time_zone('Europe/London').iso8601 if dtend
+    data['endDate'] = dtend.in_time_zone(Time.zone).iso8601 if dtend
     data['description'] = ActionController::Base.helpers.strip_tags(description_html).presence if description_html.present?
     data['eventAttendanceMode'] = json_ld_attendance_mode
 

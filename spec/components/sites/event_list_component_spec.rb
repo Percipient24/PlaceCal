@@ -33,7 +33,7 @@ RSpec.describe Components::Sites::EventList, type: :component do
   it "renders events grouped by day" do
     render_inline(described_class.new(**attrs))
 
-    expect(page).to have_text("Monday 15 January")
+    expect(page).to have_text("Monday, January 15")
     expect(page).to have_text("Community Meetup")
   end
 
@@ -52,7 +52,7 @@ RSpec.describe Components::Sites::EventList, type: :component do
     it "lists them once above the days, under their own heading" do
       render_inline(described_class.new(**attrs, ongoing: [exhibition]))
 
-      expect(page.all("h2").map(&:text)).to eq(["On now", "Monday 15 January"])
+      expect(page.all("h2").map(&:text)).to eq(["On now", "Monday, January 15"])
       expect(page).to have_css("ol[data-part='ongoing'] li", text: "Birds Exhibition", count: 1)
     end
 

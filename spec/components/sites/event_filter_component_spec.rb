@@ -150,7 +150,7 @@ RSpec.describe Components::Sites::EventFilter, type: :component do
     it "names a picked date on the from-this-date listing" do
       render_inline(described_class.new(**base_attrs, period: "future", pointer: today + 5))
 
-      expect(page).to have_css("[data-scope='event-filter'][data-part='applied']", text: "From Sun 13 Nov")
+      expect(page).to have_css("[data-scope='event-filter'][data-part='applied']", text: "From Sun, Nov 13")
       expect(page).to have_link("Reset filters", href: "/events#paginator")
     end
 

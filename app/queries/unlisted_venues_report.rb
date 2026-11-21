@@ -7,8 +7,8 @@ class UnlistedVenuesReport
   DEFAULT_LIMIT = 50
   BATCH_SIZE = 1000
   SAMPLE_WIDTH = 60
-  NO_POSTCODE = '(no postcode)'
-  HEADERS = ['Postcode', 'First line', 'Events', 'Calendars', 'Sample location'].freeze
+  NO_POSTCODE = '(no ZIP code)'
+  HEADERS = ['ZIP code', 'First line', 'Events', 'Calendars', 'Sample location'].freeze
 
   Row = Struct.new(:postcode, :first_line, :sample, :events, :calendar_ids) do
     def add(calendar_id)
@@ -59,7 +59,7 @@ class UnlistedVenuesReport
       "Upcoming events with a location: #{total}",
       "Events at venues that match no partner: #{unlisted_events}",
       "Venues that match no partner: #{@groups.size}",
-      "Events with no postcode: #{no_postcode.events}",
+      "Events with no ZIP code: #{no_postcode.events}",
       '',
       *lines
     ].join("\n")

@@ -30,7 +30,7 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "notice order" do
                                             'Skipped "Broken" because its dates could not be read (Failed to parse "2026-11-0X" - invalid date).',
                                             '"Daily" repeats more than 3 times, so only its first 3 dates were imported.',
                                             "Summary can't be blank",
-                                            'Couldn\'t read an address for "Choir" (Church Hall, 1 High Street): its location has no postcode.'
+                                            'Couldn\'t read an address for "Choir" (Church Hall, 1 High Street): its location has no ZIP code.'
                                           ])
     expect(calendar.notice_count).to eq(4)
   end

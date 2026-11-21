@@ -33,7 +33,7 @@ RSpec.describe "Importing iCal times without a time zone" do
         ENV["TZ"] = original
       end
 
-      it "starts all-day events at midnight in London, in summer and winter" do
+      it "starts all-day events at midnight in the site timezone, in summer and winter" do
         import(vevent("summer", "DTSTART;VALUE=DATE:20270705", "DTEND;VALUE=DATE:20270706"),
                vevent("winter", "DTSTART;VALUE=DATE:20261105", "DTEND;VALUE=DATE:20261106"))
 
@@ -41,7 +41,7 @@ RSpec.describe "Importing iCal times without a time zone" do
         expect(listed("winter")).to eq(["5 Nov 00:00 to 6 Nov 00:00"])
       end
 
-      it "reads floating times as London wall-clock times, in summer and winter" do
+      it "reads floating times as site wall-clock times, in summer and winter" do
         import(vevent("summer", "DTSTART:20270705T190000", "DTEND:20270705T210000"),
                vevent("winter", "DTSTART:20261105T190000", "DTEND:20261105T210000"))
 
@@ -49,7 +49,7 @@ RSpec.describe "Importing iCal times without a time zone" do
         expect(listed("winter")).to eq(["5 Nov 19:00 to 5 Nov 21:00"])
       end
 
-      it "keeps a floating weekly event at the same London time across the clock change" do
+      it "keeps a floating weekly event at the same wall-clock time across the clock change" do
         import(vevent("weekly", "DTSTART:20270324T190000", "DTEND:20270324T200000", "RRULE:FREQ=WEEKLY;COUNT=2"))
 
         expect(listed("weekly")).to eq(["24 Mar 19:00 to 24 Mar 20:00", "31 Mar 19:00 to 31 Mar 20:00"])
@@ -68,12 +68,20 @@ RSpec.describe "Importing iCal times without a time zone" do
         expect(listed("weekly")).to eq(["4 Nov 19:00 to 4 Nov 20:00", "11 Nov 21:00 to 11 Nov 22:00"])
       end
 
-      it "leaves times with a TZID or in UTC unchanged" do
+      it "leaves times with a TZID or in UTC unchanged, whatever the site timezone" do
         import(vevent("new-york", "DTSTART;TZID=America/New_York:20270705T190000", "DTEND;TZID=America/New_York:20270705T200000"),
                vevent("utc", "DTSTART:20270705T180000Z", "DTEND:20270705T190000Z"))
 
-        expect(listed("new-york")).to eq(["6 Jul 00:00 to 6 Jul 01:00"])
-        expect(listed("utc")).to eq(["5 Jul 19:00 to 5 Jul 20:00"])
+        # Assert in UTC so the expectation doesn't depend on the site timezone:
+        # 19:00 in New York in July (EDT, UTC-4) is 23:00 UTC
+        listed_utc = lambda do |uid|
+          calendar.events.where(uid:).order(:dtstart).map do |event|
+            "#{event.dtstart.utc.strftime('%-d %b %H:%M')} to #{event.dtend.utc.strftime('%-d %b %H:%M')}"
+          end
+        end
+
+        expect(listed_utc.call("new-york")).to eq(["5 Jul 23:00 to 6 Jul 00:00"])
+        expect(listed_utc.call("utc")).to eq(["5 Jul 18:00 to 5 Jul 19:00"])
       end
     end
   end

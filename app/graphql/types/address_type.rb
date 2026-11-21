@@ -7,7 +7,7 @@ module Types
     # field :id, ID, null: false
     field :street_address, String,
           method: :full_street_address,
-          description: 'The first few lines of the address like: 123 Road, Eastleigh, Southampton'
+          description: 'The first few lines of the address like: 123 Main St, Scottsville, NY 14546'
 
     field :address_locality, String,
           description: 'The ward this address is in'
@@ -17,11 +17,11 @@ module Types
 
     field :address_country, String,
           method: :country_code,
-          description: 'The country of this event (England, Scotland, Wales, or Northern Ireland)'
+          description: 'The ISO 3166-1 alpha-2 country code of the address, e.g. "US"'
 
     field :postal_code, String,
           method: :postcode,
-          description: 'A UK postcode'
+          description: 'A US ZIP code (e.g. "14546") or UK postcode (e.g. "M15 5FS")'
 
     field :neighbourhood, NeighbourhoodType,
           description: 'The neighbourhood of this address (see neighbourhood type)'

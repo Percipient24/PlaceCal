@@ -37,10 +37,12 @@ RSpec.describe Neighbourhood, type: :model do
 
   describe "validations" do
     it { is_expected.to allow_value("ZZ4000001").for(:unit_code_value) }
+    # US ZIP codes (5 chars) are allowed as unit_code_value
+    it { is_expected.to allow_value("14546").for(:unit_code_value) }
     it { is_expected.to allow_value("").for(:unit_code_value) }
-    # unit_code_value must be exactly 9 characters or blank
+    # unit_code_value must be 5-9 characters or blank
     it { is_expected.not_to allow_value("TOOLONG123").for(:unit_code_value) }
-    it { is_expected.not_to allow_value("SHORT").for(:unit_code_value) }
+    it { is_expected.not_to allow_value("SHRT").for(:unit_code_value) }
   end
 
   describe "ancestry navigation" do

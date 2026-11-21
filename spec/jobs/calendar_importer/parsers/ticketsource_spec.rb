@@ -375,13 +375,15 @@ RSpec.describe CalendarImporter::Parsers::Ticketsource do
       event = events.first
 
       expect(event.dtstart).to be_present
-      expect(event.dtstart.year).to eq(2026)
-      expect(event.dtstart.month).to eq(3)
-      expect(event.dtstart.day).to eq(15)
-      expect(event.dtstart.hour).to eq(19)
+      # The feed gives absolute times (+00:00); assert the UTC instant so the
+      # expectation doesn't depend on the site timezone
+      expect(event.dtstart.utc.year).to eq(2026)
+      expect(event.dtstart.utc.month).to eq(3)
+      expect(event.dtstart.utc.day).to eq(15)
+      expect(event.dtstart.utc.hour).to eq(19)
 
       expect(event.dtend).to be_present
-      expect(event.dtend.hour).to eq(22)
+      expect(event.dtend.utc.hour).to eq(22)
     end
 
     it "keeps a cancelled date, marked cancelled" do

@@ -81,8 +81,8 @@ RSpec.describe Components::Sites::Timeline, type: :component do
       it "shows date ranges for other weeks" do
         render_inline(described_class.new(**attrs))
 
-        # Should show date range format like "15 - 21 Nov"
-        expect(page).to have_text(/\d+-\d+ \w+/)
+        # Should show date range format like "Nov 15 - 21"
+        expect(page).to have_text(/\w+ \d+-\d+|\d+-\w+ \d+/)
       end
     end
 

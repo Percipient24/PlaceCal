@@ -214,7 +214,7 @@ RSpec.describe "Admin::Partners", type: :request do
         expect(response.body).to include("Address")
         expect(response.body).to include("Street Address")
         expect(response.body).to include("City")
-        expect(response.body).to include("Postcode")
+        expect(response.body).to include("ZIP code")
       end
 
       it "has contact information section" do

@@ -6,7 +6,7 @@ RSpec.describe "Reimporting recurring iCal events" do
   let(:calendar) { create(:ics_calendar, strategy: "no_location", importer_mode: "ical") }
 
   def vevent(uid: "weekly@example.com", start: "20261104T190000", finish: "20261104T200000", rrule: "FREQ=WEEKLY;COUNT=4", summary: "Weekly")
-    lines = ["BEGIN:VEVENT", "UID:#{uid}", "DTSTART;TZID=Europe/London:#{start}", "DTEND;TZID=Europe/London:#{finish}"]
+    lines = ["BEGIN:VEVENT", "UID:#{uid}", "DTSTART;TZID=America/New_York:#{start}", "DTEND;TZID=America/New_York:#{finish}"]
     lines << "RRULE:#{rrule}" if rrule
     lines += ["SUMMARY:#{summary}", "END:VEVENT"]
     "#{lines.join("\n")}\n"
@@ -80,7 +80,7 @@ RSpec.describe "Reimporting recurring iCal events" do
 
   describe "an event repeated with RDATE and no RRULE" do
     it "keeps a row for each date" do
-      dated = vevent(rrule: nil).sub("SUMMARY", "RDATE;TZID=Europe/London:20261111T190000\nSUMMARY")
+      dated = vevent(rrule: nil).sub("SUMMARY", "RDATE;TZID=America/New_York:20261111T190000\nSUMMARY")
 
       2.times { import(feed(dated)) }
 

@@ -6,7 +6,7 @@
 #
 #  id               :bigint           not null, primary key
 #  city             :string
-#  country_code     :string           default("UK"), not null
+#  country_code     :string           default("US"), not null
 #  latitude         :float
 #  longitude        :float
 #  postcode         :string           not null
@@ -32,7 +32,7 @@ class Address < ApplicationRecord
 
   # ==== Attributes ====
   attribute :city,            :string
-  attribute :country_code,    :string, default: 'UK'
+  attribute :country_code,    :string, default: 'US'
   attribute :latitude,        :float
   attribute :longitude,       :float
   attribute :postcode,        :string
@@ -121,11 +121,12 @@ class Address < ApplicationRecord
 
   # ==== Instance methods ====
 
-  # Normalizes postcode via UKPostcode before saving.
+  # Normalizes the postal code before saving: US ZIPs to "12345"/"12345-6789",
+  # UK postcodes via UKPostcode (see PostalCode.normalize).
   # @param str [String]
   # @return [String]
   def postcode=(str)
-    super(UKPostcode.parse(str).to_s)
+    super(PostalCode.normalize(str))
   end
 
   # Same postcode and first street line, ignoring case, spacing and punctuation.

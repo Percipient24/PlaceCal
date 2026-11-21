@@ -44,9 +44,9 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with event locations tha
     import
 
     expect(calendar.notices).to contain_exactly(
-      'Couldn\'t read an address for 2 events because their locations have no postcode, for example "Choir" (Church Hall, 1 High Street) and "Quiz" (The Pub, 2 Low Road).',
-      'Couldn\'t read an address for "Swim" (Baths, 3 Pool Lane, ZZ99 9ZZ): its postcode wasn\'t found.',
-      'Couldn\'t read an address for "Walk" (Park Gates, 4 Green Way, M15 5DD): its postcode is outside the neighbourhoods PlaceCal covers.'
+      'Couldn\'t read an address for 2 events because their locations have no ZIP code, for example "Choir" (Church Hall, 1 High Street) and "Quiz" (The Pub, 2 Low Road).',
+      'Couldn\'t read an address for "Swim" (Baths, 3 Pool Lane, ZZ99 9ZZ): its ZIP code wasn\'t found.',
+      'Couldn\'t read an address for "Walk" (Park Gates, 4 Green Way, M15 5DD): its ZIP code is outside the neighbourhoods PlaceCal covers.'
     )
     expect(calendar.events.pluck(:summary)).to contain_exactly("Choir", "Quiz", "Swim", "Walk", "Online talk")
     expect(calendar.events.where.not(address_id: nil)).to be_empty
@@ -64,7 +64,7 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with event locations tha
     serve(vevent("a", "Choir", "Church Hall, 1 High Street"))
     import(strategy: "event_override")
 
-    expect(calendar.notices.sole).to include('"Choir" (Church Hall, 1 High Street): its location has no postcode')
+    expect(calendar.notices.sole).to include('"Choir" (Church Hall, 1 High Street): its location has no ZIP code')
     expect(calendar.events.sole.place).to eq(calendar.place)
   end
 
@@ -79,7 +79,7 @@ RSpec.describe CalendarImporter::CalendarImporterTask, "with event locations tha
     serve(vevent("a", "Swim", "Baths, 3 Pool Lane, ZZ99 9ZZ"), vevent("b", "Walk", "Park Gates, 4 Green Way, M15 5DD"))
     import(strategy: "event_override")
 
-    expect(calendar.notices).to contain_exactly(include("its postcode wasn't found"), include("outside the neighbourhoods PlaceCal covers"))
+    expect(calendar.notices).to contain_exactly(include("its ZIP code wasn't found"), include("outside the neighbourhoods PlaceCal covers"))
   end
 
   it "says the location service isn't responding when the lookup times out" do

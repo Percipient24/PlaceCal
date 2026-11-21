@@ -6,7 +6,7 @@
 #
 #  id               :bigint           not null, primary key
 #  city             :string
-#  country_code     :string           default("UK"), not null
+#  country_code     :string           default("US"), not null
 #  latitude         :float
 #  longitude        :float
 #  postcode         :string           not null
@@ -57,6 +57,44 @@ RSpec.describe Address, type: :model do
         address.postcode = input
         expect(address.postcode).to eq(expected), "Expected '#{input}' to normalize to '#{expected}'"
       end
+    end
+
+    it "normalizes US ZIP codes on assignment" do
+      address = described_class.new
+      address.postcode = " 14546 "
+      expect(address.postcode).to eq("14546")
+      address.postcode = "14546-1234"
+      expect(address.postcode).to eq("14546-1234")
+      address.postcode = "145461234"
+      expect(address.postcode).to eq("14546-1234")
+    end
+  end
+
+  describe "US ZIP code addresses (Scottsville, NY)" do
+    let!(:scottsville) do
+      create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
+                             unit_code_value: "14546", level: 2)
+    end
+
+    it "defaults country_code to US" do
+      expect(described_class.new.country_code).to eq("US")
+    end
+
+    it "accepts a ZIP as a valid postcode and geocodes it to the seeded neighbourhood" do
+      address = described_class.new(street_address: "123 Main St", postcode: "14546", country_code: "US")
+
+      expect(address).to be_valid
+      expect(address.neighbourhood).to eq(scottsville)
+      expect(address.latitude).to be_within(0.001).of(43.0333)
+      expect(address.longitude).to be_within(0.001).of(-77.7833)
+      expect(address.city).to eq("Scottsville")
+    end
+
+    it "rejects a malformed postal code" do
+      address = described_class.new(street_address: "123 Main St", postcode: "ABCDE", country_code: "US")
+
+      expect(address).not_to be_valid
+      expect(address.errors[:postcode]).to include("not recognised as a postcode or ZIP code")
     end
   end
 

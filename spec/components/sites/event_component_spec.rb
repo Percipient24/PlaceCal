@@ -46,15 +46,15 @@ RSpec.describe Components::Sites::Event, type: :component do
     it "says when it runs until in place of the time range on a card" do
       rendered
 
-      expect(page).to have_css("[data-variant='date'] time.dt-start", text: "28 Nov 2026")
-      expect(page).to have_css("[data-variant='time'] time.dt-end[datetime^='2027-01-17']", text: "From 28 Nov 2026 until 17 Jan 2027")
+      expect(page).to have_css("[data-variant='date'] time.dt-start", text: "Nov 28, 2026")
+      expect(page).to have_css("[data-variant='time'] time.dt-end[datetime^='2027-01-17']", text: "From Nov 28, 2026 until Jan 17, 2027")
       expect(page).to have_no_text("10am")
     end
 
     it "shows the date range and no time line on the page" do
       render_inline(described_class.new(display_context: :page, event:))
 
-      expect(page).to have_css("[data-variant='date']", text: "28 Nov 2026 to 17 Jan 2027")
+      expect(page).to have_css("[data-variant='date']", text: "Nov 28, 2026 to Jan 17, 2027")
       expect(page).to have_no_css("[data-variant='time']")
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Components::Sites::Event, type: :component do
       allow(event).to receive(:dtend).and_return(Time.zone.parse("2027-01-18 00:00"))
       rendered
 
-      expect(page).to have_text("From 28 Nov 2026 until 17 Jan 2027")
+      expect(page).to have_text("From Nov 28, 2026 until Jan 17, 2027")
     end
   end
 
@@ -73,7 +73,7 @@ RSpec.describe Components::Sites::Event, type: :component do
     it "keeps its time range" do
       rendered
 
-      expect(page).to have_css("[data-variant='time']", text: "10am – 18 Jan 10am")
+      expect(page).to have_css("[data-variant='time']", text: "10am – Jan 18 10am")
       expect(page).to have_no_text("Until")
     end
   end
@@ -92,7 +92,7 @@ RSpec.describe Components::Sites::Event, type: :component do
 
   it "renders event date" do
     rendered
-    expect(page).to have_text("15 Jan")
+    expect(page).to have_text("Jan 15")
   end
 
   it "renders event duration" do
@@ -148,7 +148,7 @@ RSpec.describe Components::Sites::Event, type: :component do
 
       it "shows only the start day and a plain time range" do
         rendered
-        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="date"]', exact_text: /\A\s*23 Oct\s*\z/)
+        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="date"]', exact_text: /\A\s*Oct 23\s*\z/)
         expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="time"]', text: /11pm \u2013\s+3am/)
       end
     end
@@ -169,8 +169,8 @@ RSpec.describe Components::Sites::Event, type: :component do
 
       it "shows the start day and puts the end date on the time line" do
         rendered
-        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="date"]', exact_text: /\A\s*23 Oct\s*\z/)
-        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="time"]', text: "11pm \u2013 25 Oct 3pm")
+        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="date"]', exact_text: /\A\s*Oct 23\s*\z/)
+        expect(page).to have_css('[data-scope="event"][data-part="detail"][data-variant="time"]', text: "11pm \u2013 Oct 25 3pm")
       end
     end
   end

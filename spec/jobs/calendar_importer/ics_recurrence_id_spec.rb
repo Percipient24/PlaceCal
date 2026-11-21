@@ -9,8 +9,8 @@ RSpec.describe "Importing iCal series with edited occurrences" do
     <<~ICS
       BEGIN:VEVENT
       UID:weekly@example.com
-      DTSTART;TZID=Europe/London:20261104T190000
-      DTEND;TZID=Europe/London:20261104T200000
+      DTSTART;TZID=America/New_York:20261104T190000
+      DTEND;TZID=America/New_York:20261104T200000
       RRULE:FREQ=WEEKLY;COUNT=4
       SUMMARY:Weekly
       END:VEVENT
@@ -21,9 +21,9 @@ RSpec.describe "Importing iCal series with edited occurrences" do
     <<~ICS
       BEGIN:VEVENT
       UID:weekly@example.com
-      RECURRENCE-ID;TZID=Europe/London:20261111T190000
-      DTSTART;TZID=Europe/London:20261111T210000
-      DTEND;TZID=Europe/London:20261111T220000
+      RECURRENCE-ID;TZID=America/New_York:20261111T190000
+      DTSTART;TZID=America/New_York:20261111T210000
+      DTEND;TZID=America/New_York:20261111T220000
       SUMMARY:Moved
       END:VEVENT
     ICS
@@ -87,9 +87,9 @@ RSpec.describe "Importing iCal series with edited occurrences" do
     cancelled = <<~ICS
       BEGIN:VEVENT
       UID:weekly@example.com
-      RECURRENCE-ID;TZID=Europe/London:20261118T190000
-      DTSTART;TZID=Europe/London:20261118T190000
-      DTEND;TZID=Europe/London:20261118T200000
+      RECURRENCE-ID;TZID=America/New_York:20261118T190000
+      DTSTART;TZID=America/New_York:20261118T190000
+      DTEND;TZID=America/New_York:20261118T200000
       STATUS:CANCELLED
       SUMMARY:Weekly
       END:VEVENT
@@ -106,8 +106,8 @@ RSpec.describe "Importing iCal series with edited occurrences" do
     talk = <<~ICS
       BEGIN:VEVENT
       UID:talk@example.com
-      DTSTART;TZID=Europe/London:20261120T190000
-      DTEND;TZID=Europe/London:20261120T200000
+      DTSTART;TZID=America/New_York:20261120T190000
+      DTEND;TZID=America/New_York:20261120T200000
       STATUS:CANCELLED
       SUMMARY:Talk
       END:VEVENT
@@ -138,7 +138,7 @@ RSpec.describe "Importing iCal series with edited occurrences" do
 
   it "drops an occurrence removed with EXDATE" do
     import(feed(series))
-    import(feed(series.sub("RRULE", "EXDATE;TZID=Europe/London:20261125T190000\nRRULE")))
+    import(feed(series.sub("RRULE", "EXDATE;TZID=America/New_York:20261125T190000\nRRULE")))
 
     expect(listed.map(&:first)).to eq(["4 Nov 19:00", "11 Nov 19:00", "18 Nov 19:00"])
   end

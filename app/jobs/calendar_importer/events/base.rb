@@ -182,9 +182,12 @@ module CalendarImporter::Events
       Base.postcode_in(location)
     end
 
-    # @return [String] the first full UK postcode in the text, normalised, or "" if there is none
+    # @return [String] the first US ZIP or full UK postcode in the text, normalised, or "" if there is none
     def self.postcode_in(text)
       location_parts = text.to_s.split(/[\s,]+/)
+
+      zip = location_parts.find { |location_part| PostalCode.us_zip?(location_part) }
+      return zip if zip
 
       location_parts.each_cons(2) do |location_part_pair|
         ukpc = UKPostcode.parse(location_part_pair.join(' '))

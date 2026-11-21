@@ -33,7 +33,9 @@ module PlaceCal
     # is in place before anything loads ActiveRecord, which copies it into filter_attributes.
     config.filter_parameters += %i[passw email secret token _key crypt salt certificate otp ssn cvv cvc]
 
-    config.time_zone = 'Europe/London'
+    # Global site timezone. This deployment runs for Scottsville, NY, so it
+    # defaults to America/New_York; override per-deployment with PLACECAL_TIME_ZONE.
+    config.time_zone = ENV.fetch('PLACECAL_TIME_ZONE', 'America/New_York')
 
     # Cloudflare's edges (https://www.cloudflare.com/ips) count as proxies, so remote_ip is the visitor
     config.action_dispatch.trusted_proxies = ActionDispatch::RemoteIp::TRUSTED_PROXIES + %w[

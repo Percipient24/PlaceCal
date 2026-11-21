@@ -7,17 +7,17 @@ module PlacecalMcp
     tool_name 'search_events'
     title 'Find local community events'
     description <<~TEXT.squish
-      Find community events listed on PlaceCal, a UK directory of local groups, libraries,
-      community centres and charities. Search by UK place name or postcode, optionally narrowed
+      Find community events listed on PlaceCal, a directory of local groups, libraries,
+      community centres and charities. Search by place name or ZIP code, optionally narrowed
       by dates, keyword or category. Returns upcoming events with times, venue, organiser and a
       link to the event page.
     TEXT
     annotations(read_only_hint: true, open_world_hint: false)
     input_schema(
       properties: {
-        place: { type: 'string', description: 'UK ward, district, county or region name, e.g. "Hulme" or "Manchester". ' \
+        place: { type: 'string', description: 'Neighbourhood, district, county or region name, e.g. "Scottsville" or "Monroe County". ' \
                                               'Add the wider area after a comma where names repeat, e.g. "Castle, Cambridge"' },
-        postcode: { type: 'string', description: 'UK postcode, e.g. "M15 5FS"' },
+        postcode: { type: 'string', description: 'US ZIP code, e.g. "14546" (UK postcodes like "M15 5FS" also work)' },
         from_date: { type: 'string', description: 'Earliest start date, YYYY-MM-DD. Defaults to now' },
         to_date: { type: 'string', description: 'Latest start date, YYYY-MM-DD, inclusive' },
         keyword: { type: 'string', description: 'Text to find in event titles and descriptions, e.g. "yoga"' },

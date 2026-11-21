@@ -151,7 +151,7 @@ RSpec.describe "Public page meta tags", type: :request do
       event_one.update!(description: "", dtstart: Time.zone.local(2030, 6, 3, 10), dtend: Time.zone.local(2030, 6, 3, 12))
       get "http://lvh.me/events/#{event_one.id}"
 
-      expect(description).to start_with("Community Coffee Morning on Monday 3 June")
+      expect(description).to start_with("Community Coffee Morning on Monday, June 3")
       expect(description).to include(riverside_hub.name)
     end
   end

@@ -23,7 +23,7 @@ RSpec.describe "events:unlisted_venues", type: :task do
   it "prints CSV and applies the limit" do
     output = capture_stdout { run_task("1", "csv") }
 
-    expect(CSV.parse(output).map { |row| row[1] }).to eq(["First line", "Oak Hall", "(no postcode)"])
+    expect(CSV.parse(output).map { |row| row[1] }).to eq(["First line", "Oak Hall", "(no ZIP code)"])
   end
 
   it "prints CSV with the default limit when the limit is blank" do

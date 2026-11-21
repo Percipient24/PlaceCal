@@ -173,7 +173,7 @@ RSpec.describe Event, type: :model do
     it "gives the dates of a long-running event in place of its times" do
       event = build(:event, summary: "Magic Place", organiser: nil,
                             dtstart: Time.zone.local(2026, 11, 28, 10), dtend: Time.zone.local(2027, 1, 18))
-      Timecop.travel(Time.zone.local(2026, 11, 1)) { expect(event.og_title).to eq("Magic Place, 28 Nov to 17 Jan 2027") }
+      Timecop.travel(Time.zone.local(2026, 11, 1)) { expect(event.og_title).to eq("Magic Place, Nov 28 to Jan 17, 2027") }
     end
 
     it "leaves out the times of an all-day event" do

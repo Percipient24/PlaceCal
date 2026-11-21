@@ -111,11 +111,11 @@ module PartnerJsonLd
         '@type' => 'Event',
         '@id' => "#{base_url}/events/#{event.id}",
         'name' => event.summary,
-        'startDate' => event.dtstart.in_time_zone('Europe/London').iso8601,
+        'startDate' => event.dtstart.in_time_zone(Time.zone).iso8601,
         'eventStatus' => event.json_ld_event_status,
         'eventAttendanceMode' => event.json_ld_attendance_mode
       }
-      entry['endDate'] = event.dtend.in_time_zone('Europe/London').iso8601 if event.dtend
+      entry['endDate'] = event.dtend.in_time_zone(Time.zone).iso8601 if event.dtend
       entry['description'] = ActionController::Base.helpers.strip_tags(event.description_html).presence if event.description_html.present?
       if event.address
         entry['location'] = {

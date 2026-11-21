@@ -420,17 +420,17 @@ en:
             one: "Couldn't read an address for %{examples}: its location has no street line."
             other: "Couldn't read an address for %{count} events because their locations have no street line, for example %{examples}."
           no_postcode:
-            one: "Couldn't read an address for %{examples}: its location has no postcode."
-            other: "Couldn't read an address for %{count} events because their locations have no postcode, for example %{examples}."
+            one: "Couldn't read an address for %{examples}: its location has no ZIP code."
+            other: "Couldn't read an address for %{count} events because their locations have no ZIP code, for example %{examples}."
           postcode_not_found:
-            one: "Couldn't read an address for %{examples}: its postcode wasn't found."
-            other: "Couldn't read an address for %{count} events because their postcodes weren't found, for example %{examples}."
+            one: "Couldn't read an address for %{examples}: its ZIP code wasn't found."
+            other: "Couldn't read an address for %{count} events because their ZIP codes weren't found, for example %{examples}."
           lookup_unavailable:
             one: "Couldn't read an address for %{examples}: the location service isn't responding."
             other: "Couldn't read an address for %{count} events because the location service isn't responding, for example %{examples}."
           outside_neighbourhoods:
-            one: "Couldn't read an address for %{examples}: its postcode is outside the neighbourhoods PlaceCal covers."
-            other: "Couldn't read an address for %{count} events because their postcodes are outside the neighbourhoods PlaceCal covers, for example %{examples}."
+            one: "Couldn't read an address for %{examples}: its ZIP code is outside the neighbourhoods PlaceCal covers."
+            other: "Couldn't read an address for %{count} events because their ZIP codes are outside the neighbourhoods PlaceCal covers, for example %{examples}."
         source_unavailable: "%{source} didn't respond, so this import was skipped and the calendar's events were left as they were."
         room_number_without_venue: "This calendar reads room numbers from its events but has no default location to put the rooms in. Choose a default location."
         feed_empty:
@@ -752,8 +752,8 @@ en:
       validation:
         name_min_length: "Name must be at least 5 characters"
         name_required: "Partner name is required"
-        location_required: "Please provide either an address (street address and postcode) or at least one service area."
-        address_incomplete: "Address requires both street address and postcode to be saved."
+        location_required: "Please provide either an address (street address and ZIP code) or at least one service area."
+        address_incomplete: "Address requires both street address and ZIP code to be saved."
       preview:
         no_description: "No description provided."
       facilities:
@@ -785,7 +785,7 @@ en:
         when_hidden: "When a partner is hidden:"
       warnings:
         outdated_neighbourhood: 'Outdated neighbourhood. Contact <a href="mailto:%{email}" class="link">support</a> to reassign.'
-        unmappable_postcode: "Postcode not in our system yet."
+        unmappable_postcode: "ZIP code not in our system yet."
       danger_zone:
         no_permission: "You don't have permission to delete this partner."
 
