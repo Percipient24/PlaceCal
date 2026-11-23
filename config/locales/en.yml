@@ -366,7 +366,7 @@ en:
     pages:
       mcp:
         heading: "For AI assistants"
-        hero_title: "Ask your AI assistant what's on near you"
+        hero_title: "Ask your AI assistant what's happening near you"
         hero_lede: "PlaceCal has an MCP server. Connect it to an AI assistant like ChatGPT or Claude and it can search our local community events and link you to them."
         address_label: "Server address"
         copy: "Copy"
@@ -672,9 +672,9 @@ en:
   sites:
     home:
       # %{link} is the "local organisations" link, %{place} the site's place name
-      mission_html: "We're working with %{link} to create a great calendar of everything that's on in %{place}."
+      mission_html: "We're working with %{link} to create a great calendar of everything that's happening in %{place}."
       mission_link: "local organisations"
-      whats_on: "See what's on"
+      whats_on: "See what's happening"
       about_us: "About Us"
     join:
       hero:
@@ -731,7 +731,7 @@ en:
         one: "1 event"
         other: "%{count} events"
       page_title: "Events"
-      description: "What's on in %{site}: upcoming events and activities from local groups, venues and services, with dates, times and addresses."
+      description: "Happening in %{site}: upcoming events and activities from local groups, venues and services, with dates, times and addresses."
       title: "Events & activities"
       standfirst: ""
       # Blank by design: the event list opens with an h2 per day, so there is

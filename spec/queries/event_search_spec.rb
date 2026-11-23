@@ -75,8 +75,8 @@ RSpec.describe EventSearch do
   end
 
   it "resolves a US ZIP code to its neighbourhood" do
-    scottsville = create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
-                                         unit_code_value: "14546", level: 2)
+    scottsville = create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "TOWN",
+                                         unit_code_value: "SCOTTSVL", level: 2)
     event = create(:event, organiser: oldtown_partner, address: create(:address, neighbourhood: scottsville))
     create(:event, organiser: oldtown_partner, address: in_riverside)
 

@@ -1,23 +1,29 @@
 # frozen_string_literal: true
 
-require_relative '../../lib/normal_island'
-
+# Launch tags for the Scottsville, NY deployment: Categories only.
+# Partnerships are deliberately not seeded at launch — when a group of partners
+# needs to be first-class (its own Site, its own admins), add a tag with
+# type 'Partnership' here instead of overloading a Category. Keep one row per
+# name: never create the same name as both a Category and a Partnership.
 module SeedTags
-  def self.run
-    $stdout.puts 'Tags'
+  CATEGORIES = [
+    'Community Events',
+    'Games & Entertainment',
+    'Education & Learning',
+    'Art, Music & Culture',
+    'Sports & Athletics',
+    'Food'
+  ].freeze
 
-    { categories: 'category', facilities: 'facility', partnerships: 'partnership' }.each do |group, label|
-      NormalIsland::TAGS[group].each do |tag_data|
-        tag = Tag.find_or_create_by!(name: tag_data[:name], type: tag_data[:type]) do |t|
-          t.slug = tag_data[:name].parameterize
-          t.description = case tag_data[:type]
-                          when 'Category' then "Events and activities related to #{tag_data[:name].downcase}"
-                          when 'Facility' then "Venue has: #{tag_data[:name]}"
-                          when 'Partnership' then "Part of the #{tag_data[:name]} partnership"
-                          end
-        end
-        $stdout.puts "  #{tag.previously_new_record? ? 'Created' : 'Found'} #{label}: #{tag.name}"
+  def self.run
+    $stdout.puts 'Tags (categories)'
+
+    CATEGORIES.each do |name|
+      tag = Tag.find_or_create_by!(name:, type: 'Category') do |t|
+        t.slug = name.parameterize
+        t.description = "Events and activities related to #{name.downcase}"
       end
+      $stdout.puts "  #{tag.previously_new_record? ? 'Created' : 'Found'} category: #{tag.name}"
     end
   end
 end

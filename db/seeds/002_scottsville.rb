@@ -7,20 +7,23 @@ require 'yaml'
 #   United States (country, level 5)
 #   └── New York (region, level 4)
 #       └── Monroe County (county, level 3)
-#           └── Scottsville (district, level 2, unit_code_value = ZIP "14546")
+#           └── Scottsville (district, level 2, unit_code_value = town code "SCOTTSVL")
 #
-# The ZIPs come from config/geo/us_zips.yml, which is also what the local US ZIP
-# lookup (UsZipLookup) uses, so a seeded ZIP geocodes and maps to its neighbourhood.
+# The TOWN is the primary geographic unit, not the ZIP: config/geo/us_zips.yml is
+# keyed by town (each listing the ZIPs that resolve to it), one district-level
+# Neighbourhood is seeded per town keyed by the town code, and UsZipLookup puts
+# the town code in the geocoder result's codes — so any of a town's ZIPs geocodes
+# to the town's district node. ZIPs need no Neighbourhood rows of their own; they
+# are just address data (the Address's postcode).
 module SeedScottsville
-  # YAML parses bare 5-digit keys as integers, so stringify them
-  ZIPS = YAML.load_file(Rails.root.join('config/geo/us_zips.yml')).transform_keys(&:to_s).except('default').freeze
+  TOWNS = YAML.load_file(Rails.root.join('config/geo/us_zips.yml')).fetch('towns').freeze
 
   COUNTRY_CODE = 'US000001'   # 9 chars, ISO-3166-style placeholder
   STATE_FIPS   = '36000000'   # New York state FIPS 36, padded to 9
   COUNTY_FIPS  = '36055000'   # Monroe County NY FIPS 36055, padded to 9
 
   def self.run # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    return if ZIPS.empty?
+    return if TOWNS.empty?
 
     $stdout.puts 'Neighbourhoods - Scottsville, NY (USA)'
 
@@ -57,18 +60,21 @@ module SeedScottsville
     end
     $stdout.puts "  Country: #{country.name} > Region: #{state.name} > County: #{county.name}"
 
-    ZIPS.each do |zip, data|
-      place = Neighbourhood.find_or_create_by!(unit_code_value: zip) do |n|
-        n.name = data['place']
-        n.name_abbr = zip
+    # One district per town; the town code is the unit_code_value the geocoder's
+    # codes match against. ZIPs listed under the town need no rows of their own.
+    TOWNS.each do |town_code, town|
+      district = Neighbourhood.find_or_create_by!(unit_code_value: town_code) do |n|
+        n.name = town['place']
+        n.name_abbr = town['place']
         n.unit = :district
-        n.unit_code_key = 'ZIP'
-        n.unit_name = 'ZIP code area'
+        n.unit_code_key = 'TOWN'
+        n.unit_name = 'Town'
         n.release_date = Neighbourhood::LATEST_RELEASE_DATE
-        n.parent = county
+        n.parent = Neighbourhood.find_by(name: town['county'], unit: :county) || county
         n.level = 2
       end
-      $stdout.puts "  District: #{place.name} (#{zip})"
+      zips = (town['zips'] || {}).keys.join(', ')
+      $stdout.puts "  District (town): #{district.name} (#{town_code}) — ZIPs: #{zips}"
     end
   end
 end

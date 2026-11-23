@@ -13,8 +13,10 @@ RSpec.describe UsZipLookup do
       expect(result["admin_district"]).to eq("Scottsville")
       expect(result["admin_county"]).to eq("Monroe County")
       expect(result["country"]).to eq("United States")
-      # codes drive Neighbourhood.find_from_postcodesio_response: the ZIP is the ward/district code
-      expect(result["codes"]).to eq("admin_ward" => "14546", "admin_district" => "14546")
+      # codes drive Neighbourhood.find_from_postcodesio_response: they carry the
+      # TOWN code, so the address maps to the town's district-level Neighbourhood
+      # (the ZIP itself is not a Neighbourhood, just address data)
+      expect(result["codes"]).to eq("admin_ward" => "SCOTTSVL", "admin_district" => "SCOTTSVL")
     end
 
     it "accepts ZIP+4 and resolves on the 5-digit part" do
@@ -39,7 +41,7 @@ RSpec.describe UsZipLookup do
 
       expect(result["postcode"]).to eq("14546")
       expect(result["latitude"]).to be_within(0.001).of(43.0246)
-      expect(result["codes"]).to eq("admin_ward" => "14546", "admin_district" => "14546")
+      expect(result["codes"]).to eq("admin_ward" => "SCOTTSVL", "admin_district" => "SCOTTSVL")
     end
 
     it "returns nil for a non-ZIP" do
@@ -67,7 +69,7 @@ RSpec.describe UsZipLookup do
       expect(result["latitude"]).to be_within(0.000001).of(43.019490119796)
       expect(result["longitude"]).to be_within(0.000001).of(-77.754542372393)
       expect(result["admin_district"]).to eq("Scottsville")
-      expect(result["codes"]["admin_ward"]).to eq("14546")
+      expect(result["codes"]["admin_ward"]).to eq("SCOTTSVL")
     end
 
     it "returns nil when the Census geocoder has no match, so callers fall back to the ZIP centroid" do
@@ -108,6 +110,20 @@ RSpec.describe UsZipLookup do
       expect(result["latitude"]).to eq(40.7128)
       expect(result["longitude"]).to eq(-74.0060)
       expect(result["codes"]["admin_ward"]).to eq("10001")
+    end
+
+    it "maps a remote place name onto a covered town's code when the ZIP isn't listed locally" do
+      stub_request(:get, "https://api.zippopotam.us/us/14599").to_return(
+        status: 200,
+        body: {
+          post_code: "14599",
+          places: [{ "place name" => "Scottsville", "latitude" => "43.02", "longitude" => "-77.77" }]
+        }.to_json
+      )
+
+      result = described_class.lookup_remote("14599")
+
+      expect(result["codes"]).to eq("admin_ward" => "SCOTTSVL", "admin_district" => "SCOTTSVL")
     end
 
     it "returns nil when the remote service says the ZIP does not exist" do

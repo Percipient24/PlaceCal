@@ -100,16 +100,16 @@
 	/* Colours */
 
 	/* Main site colour */
-	--color-primary: #afcf5a;
-	--color-primary-light: #c3db83;
+	--color-primary: #f4cf33;
+	--color-primary-light: #ffef53;
 	/* Main page background */
-	--color-background: #fffcf0;
+	--color-background: #fefefa;
 	/* Main copy colour */
-	--color-foreground: #5b4e46;
+	--color-foreground: #244b5a;
 	/* Darker browns for copy sitting on a tinted panel, where --color-foreground
 	   does not clear WCAG AA */
-	--color-foreground-dark: #43392f;
-	--color-foreground-darker: #3d342e;
+	--color-foreground-dark: #143b4a;
+	--color-foreground-darker: #042b3a;
 	/* Horizontal lines, for example around events */
 	--color-rules: #f1e9da;
 	/* Filter and breadcrumb underlines, the local-site footer's small print */
@@ -117,7 +117,7 @@
 	/* Form control borders: 3:1 against the page and panels, so a field's edge can be seen (WCAG 1.4.11) */
 	--color-control-border: var(--color-tertiary);
 	/* Contrast colours */
-	--color-secondary: #f19089;
+	--color-secondary: #bfce88;
 	/* Deeper salmon for small text / numerals that need contrast on cream */
 	--color-secondary-deep: #e66f67;
 	/* Deepest salmon: large display numerals on cream */
@@ -126,13 +126,13 @@
 	   and as a CTA background under cream text: 5.3:1 both ways */
 	--color-secondary-strong: #b5443d;
 	/* Card / alt-section surfaces on the join site (from the pricing design) */
-	--color-cream: #fdf6e9;
+	--color-cream: #d1ccc6;
 	/* Warmer cream for the pricing page's Starter strip */
-	--color-cream-warm: #fdf0dd;
+	--color-cream-warm: #d7c7c6;
 	/* Muted text and icons, and navigation in some states */
 	--color-tertiary: #786551;
 	/* Page background around the content column, and rules on the local-site footer, news cards and above a full-width map */
-	--color-tertiary-light: #998675;
+	--color-tertiary-light: #cfe3ee;
 	/* Plain white surfaces: focused inputs, unchecked checkbox boxes */
 	--color-surface: #fff;
 	/* Translucent white over a dark/branded panel */
@@ -148,8 +148,8 @@
 	--color-dot-shadow: rgb(0 0 0 / 0.3);
 
 	/* The placecal.org palette; some repeat colours above */
-	--color-home-background: #fffcf0;
-	--color-home-background-3: #f0e9da;
+	--color-home-background: #fefefa;
+	--color-home-background-3: #eeeeea;
 	--color-home-blue: #74d4ec;
 
 	/* Shadows */

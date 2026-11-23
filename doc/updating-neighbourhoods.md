@@ -134,3 +134,46 @@ kamal app exec -d production 'bin/rails neighbourhoods:remap_associations'
 ```
 
 **Warning:** Between the time your new code is deployed and the import script runs, the `latest_release` scope will filter for the new release date which hasn't been imported yet. This means neighbourhood selection will be temporarily broken. Minimise this window by running the import immediately after deploy.
+
+## US deployments: town-primary hierarchy
+
+The UK flow above (ONS lookups, ward-level postcode mapping) does not apply to US
+deployments such as Scottsville, NY. There the **town is the primary geographic
+unit**, because ZIP codes cut across town boundaries (a town spans several ZIPs;
+a ZIP can span several towns):
+
+```
+United States (country, level 5)
+└── New York (region/state, level 4)
+    └── Monroe County (county, level 3)
+        └── Scottsville (district, level 2, unit_code_value = town code e.g. "SCOTTSVL")
+```
+
+- `config/geo/us_zips.yml` is keyed by **town**, each town listing the ZIPs that
+  resolve to it (a multi-town ZIP can be listed under each). It is purely a
+  geocoder lookup table — ZIPs are address data (`addresses.postcode`), never
+  `Neighbourhood` rows.
+- `db/seeds/002_scottsville.rb` seeds one district-level `Neighbourhood` per town,
+  keyed by the town code (`unit_code_key: 'TOWN'`).
+- `UsZipLookup` puts the **town code** (not the ZIP) into the geocoder result's
+  `codes.admin_ward`/`admin_district`, so `Neighbourhood.find_from_postcodesio_response`
+  lands any of the town's addresses on the town's district node. ZIPs not listed
+  locally are fetched from zippopotam.us and matched back to a covered town by
+  place name (`UsZipLookup.town_code_for_place`).
+- Sites anchor to the town district (and cover everything under it, as always).
+  To add another town, add a town entry to `us_zips.yml` and re-run
+  `rails db:seed` — no ZIP-level rows are created.
+
+### Production runbook (US)
+
+Deploys run `db:prepare` (migrations only) — seeds never run automatically. After the
+first production deploy, run the geography seed once so addresses can geocode:
+
+```bash
+kamal app exec -d production 'bin/rails db:seed'   # loads ONLY db/seeds/002_scottsville.rb in production
+```
+
+`db/seeds.rb` loads the geography seed in every environment but everything else
+(users, categories, demo site/partners/events) only outside production. In
+production, create the first root user in the console with a real password, then
+create the site, categories, partners and events through the admin UI.

@@ -8,12 +8,38 @@ require 'yaml'
 # of the address pipeline (Address#geocode_with_ward,
 # Neighbourhood.find_from_postcodesio_response) works unchanged for US addresses.
 #
-# ZIPs listed in config/geo/us_zips.yml resolve locally with no network call — this
-# is the source of truth for the Scottsville, NY deployment. Any other ZIP goes to
-# zippopotam.us (keyless, US-only) outside test, and to a stub in test.
+# config/geo/us_zips.yml is the local lookup table for the geography this
+# deployment covers, keyed by TOWN — the primary geographic unit. The result's
+# codes carry the town's code, so an address maps to its town's district-level
+# Neighbourhood. The ZIP itself is only address data: it stays in the result's
+# 'postcode' (and on the Address) and is never a Neighbourhood. ZIPs not listed
+# under any town go to zippopotam.us (keyless, US-only) outside test, and to a
+# stub in test.
 module UsZipLookup
-  # YAML parses bare 5-digit keys as integers, so stringify them
-  LOCAL_ZIPS = YAML.load_file(Rails.root.join('config/geo/us_zips.yml')).transform_keys(&:to_s).freeze
+  RAW_GEO = YAML.load_file(Rails.root.join('config/geo/us_zips.yml')).freeze
+
+  # town_code => town entry, e.g. { 'place' => 'Scottsville', 'county' => ..., 'zips' => { '14546' => {...} } }
+  TOWNS = RAW_GEO.fetch('towns').freeze
+
+  # Stub returned for any unlisted ZIP in the test environment
+  DEFAULT = RAW_GEO['default']&.freeze
+
+  # zip5 => lookup entry. A ZIP listed under several towns appears once, pointing
+  # at the first town listed (an address can only link to one Neighbourhood).
+  # YAML parses bare 5-digit keys as integers, so stringify them.
+  ZIP_INDEX = TOWNS.each_with_object({}) do |(town_code, town), index|
+    raw_zips = town['zips'] || {}
+    zips = raw_zips.is_a?(Array) ? raw_zips.index_with(nil) : raw_zips.transform_keys(&:to_s)
+    zips.each do |zip, coords|
+      index[zip] ||= {
+        'town_code' => town_code,
+        'place' => town['place'],
+        'county' => town['county'],
+        'latitude' => coords&.dig('latitude') || town['latitude'],
+        'longitude' => coords&.dig('longitude') || town['longitude']
+      }
+    end
+  end.freeze
 
   # @param zip [String] a US ZIP (5 digits) or ZIP+4
   # @return [Hash, nil] postcodes.io-shaped result, or nil when the ZIP doesn't exist
@@ -22,8 +48,9 @@ module UsZipLookup
     zip5 = PostalCode.us_zip5(zip)
     return nil if zip5.blank?
 
-    return shape(zip5, LOCAL_ZIPS[zip5]) if LOCAL_ZIPS[zip5]
-    return shape(zip5, LOCAL_ZIPS.fetch('default')) if Rails.env.test? && LOCAL_ZIPS['default']
+    entry = ZIP_INDEX[zip5]
+    return shape(zip5, entry) if entry
+    return shape(zip5, DEFAULT) if Rails.env.test? && DEFAULT
 
     lookup_remote(zip5)
   end
@@ -70,6 +97,7 @@ module UsZipLookup
     shape(zip5, {
             'place' => match.dig('addressComponents', 'city')&.titleize || city,
             'county' => nil, # Census address geocoder doesn't return county
+            'town_code' => ZIP_INDEX.dig(zip5, 'town_code'),
             'latitude' => coords['y'],
             'longitude' => coords['x']
           })
@@ -92,6 +120,7 @@ module UsZipLookup
     shape(zip5, {
             'place' => place['place name'],
             'county' => nil, # zippopotam.us doesn't return county
+            'town_code' => town_code_for_place(place['place name']),
             'latitude' => place['latitude'],
             'longitude' => place['longitude']
           })
@@ -101,12 +130,36 @@ module UsZipLookup
     raise PostcodeLookup::Unavailable, "ZIP lookup failed: #{e.class}: #{e.message}"
   end
 
+  # Map a place name from a remote lookup onto a locally covered town_code, so a
+  # ZIP that isn't listed in us_zips.yml still resolves to its town's Neighbourhood
+  # when the town is one this deployment covers.
+  # @param place [String, nil] place name, e.g. "Scottsville"
+  # @return [String, nil] the town code, or nil when no covered town matches
+  def self.town_code_for_place(place)
+    return nil if place.blank?
+
+    wanted = place.to_s.downcase
+    TOWNS.each do |town_code, town|
+      return town_code if town['place'].to_s.downcase == wanted
+    end
+    nil
+  end
+
+  # @return [Array(Float, Float), nil] the first covered town's centroid, for the
+  #   admin pin map's default center
+  def self.first_town_centroid
+    _town_code, town = TOWNS.find { |_code, t| t['latitude'] }
+    [town['latitude'].to_f, town['longitude'].to_f] if town
+  end
+
   # The keys mirror what postcodes.io returns for a UK postcode: the address pipeline
   # reads admin_district/admin_county/country for place names, latitude/longitude for
   # the map, and codes.admin_ward/admin_district to match a Neighbourhood's
-  # unit_code_value (for US ZIPs we seed the ZIP itself as the code).
+  # unit_code_value. For US addresses the codes carry the town code, so the address
+  # lands on the town's district-level Neighbourhood; the ZIP stays in 'postcode'.
   # @return [Hash]
   def self.shape(zip5, data)
+    town_code = data['town_code'].presence || zip5
     {
       'postcode' => zip5,
       'latitude' => data['latitude'].to_f,
@@ -115,7 +168,7 @@ module UsZipLookup
       'admin_district' => data['place'],
       'admin_county' => data['county'],
       'admin_ward' => data['place'],
-      'codes' => { 'admin_ward' => zip5, 'admin_district' => zip5 }
+      'codes' => { 'admin_ward' => town_code, 'admin_district' => town_code }
     }
   end
 end

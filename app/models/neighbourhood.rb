@@ -87,7 +87,9 @@ class Neighbourhood < ApplicationRecord
   # validates :unit_code_value, presence: true, uniqueness: true
   # validates :name, presence: true
   validates :level, inclusion: { in: LEVELS.values }, allow_nil: true
-  # ONS codes are 9 chars; US ZIP codes used as unit_code_value are 5
+  # ONS codes are 9 chars; US town codes (e.g. SCOTTSVL, the district-level code
+  # geocoding matches against) are 8, and ZIPs (5) only ever appear as address
+  # data, not as unit_code_value
   validates :unit_code_value,
             length: { in: 5..9 },
             allow_blank: true

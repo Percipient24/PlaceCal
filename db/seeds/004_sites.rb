@@ -1,145 +1,35 @@
 # frozen_string_literal: true
 
-require_relative '../../lib/normal_island'
-
-module SeedSites # rubocop:disable Metrics/ModuleLength
-  IMAGES_DIR = Rails.root.join('db/seeds/images/sites')
-
-  SITE_DATA = {
-    normal_island_country: {
-      place_name: 'Normal Island (country)',
-      hero_text: 'Everything happening across Normal Island',
-      theme: :pink,
-      hero_image: 'normal_island_hero.jpg',
-      logo: 'normal_island_logo.svg'
-    },
-    coastshire_county: {
-      place_name: 'Coastshire (county)',
-      hero_text: 'Events and activities on the coast',
-      theme: :orange,
-      hero_image: 'coastshire_hero.jpg',
-      logo: 'coastshire_logo.svg'
-    },
-    millbrook_district: {
-      place_name: 'Millbrook (district)',
-      hero_text: 'What\'s on in Millbrook',
-      theme: :blue,
-      hero_image: 'millbrook_hero.jpg',
-      logo: 'millbrook_logo.svg'
-    },
-    book_clubs_partnership: {
-      place_name: 'Normal Island Book Clubs',
-      hero_text: 'Reading groups and literary events across Normal Island',
-      theme: :green,
-      hero_image: 'normal_island_hero.jpg',
-      logo: 'book_clubs_logo.svg'
-    },
-    scottsville: {
-      place_name: 'Scottsville, NY',
-      hero_text: 'Everything happening in Scottsville, NY',
-      theme: :pink,
-      hero_image: 'scottsville_hero.jpg',
-      logo: 'scottsville_logo.svg'
-    }
-  }.freeze
-
-  def self.attach_images(site, data)
-    hero_path = IMAGES_DIR.join(data[:hero_image])
-    logo_path = IMAGES_DIR.join(data[:logo])
-
-    site.hero_image = File.open(hero_path) if hero_path.exist?
-    site.logo = File.open(logo_path) if logo_path.exist?
-    site.save!
-  end
-
-  def self.ensure_primary_neighbourhood(site, neighbourhood)
-    return unless neighbourhood
-
-    existing = SitesNeighbourhood.find_by(site:, neighbourhood:)
-    if existing
-      existing.update!(relation_type: 'Primary')
-    else
-      SitesNeighbourhood.create!(site:, neighbourhood:, relation_type: 'Primary')
-    end
-  end
-
-  def self.create_site(slug:, name:, tagline:, data_key:, neighbourhood: nil, published: true) # rubocop:disable Metrics/ParameterLists
-    site = Site.find_or_create_by!(slug:) do |s|
-      s.name = name
-      s.tagline = tagline
-      s.is_published = published
-    end
-
-    data = SITE_DATA[data_key]
-    site.update!(
-      name:,
-      place_name: data[:place_name],
-      hero_text: data[:hero_text],
-      theme: data[:theme],
-      is_published: published
-    )
-    ensure_primary_neighbourhood(site, neighbourhood)
-    attach_images(site, data)
-    $stdout.puts "  Site: #{site.name} (#{site.slug})"
-    site
-  end
-
-  def self.assign_partnership_tag(site, tag_name)
-    tag = Tag.find_by(name: tag_name, type: 'Partnership')
-    return unless tag
-
-    SitesTag.find_or_create_by!(site:, tag:)
-  end
-
+# Launch sites for the Scottsville, NY deployment: one site, anchored to the
+# town-level district seeded by db/seeds/002_scottsville.rb. Add a town, add a
+# site here anchored to its district (see config/geo/us_zips.yml).
+module SeedSites
   def self.run
     $stdout.puts 'Sites'
 
-    # Normal Island (country)
-    create_site(
-      slug: 'normal-island',
-      name: 'Normal Island (country)',
-      tagline: 'Everything happening across Normal Island',
-      data_key: :normal_island_country,
-      neighbourhood: Neighbourhood.find_by(name: 'Normal Island', unit: 'country')
-    )
+    district = Neighbourhood.find_by(name: 'Scottsville', unit: 'district')
+    raise 'Seed db/seeds/002_scottsville.rb first — no Scottsville district found' unless district
 
-    # Coastshire (county)
-    create_site(
-      slug: 'coastshire',
-      name: 'Coastshire (county)',
-      tagline: 'Events and activities on the coast',
-      data_key: :coastshire_county,
-      neighbourhood: Neighbourhood.find_by(name: 'Coastshire', unit: 'county')
-    )
+    site = Site.find_or_create_by!(slug: 'scottsville') do |s|
+      s.name = 'Scottsville'
+      s.tagline = "What's on in Scottsville, NY"
+      s.place_name = 'Scottsville, NY'
+      s.hero_text = 'Everything happening in Scottsville, NY'
+      s.theme = :pink
+      s.is_published = true
+    end
+    site.update!(name: 'Scottsville', tagline: "What's on in Scottsville, NY",
+                 place_name: 'Scottsville, NY', hero_text: 'Everything happening in Scottsville, NY',
+                 is_published: true)
 
-    # Millbrook (district)
-    create_site(
-      slug: 'millbrook',
-      name: 'Millbrook (district)',
-      tagline: 'What\'s on in Millbrook',
-      data_key: :millbrook_district,
-      neighbourhood: Neighbourhood.find_by(name: 'Millbrook', unit: 'district')
-    )
+    link = SitesNeighbourhood.find_by(site:, neighbourhood: district)
+    if link
+      link.update!(relation_type: 'Primary')
+    else
+      SitesNeighbourhood.create!(site:, neighbourhood: district, relation_type: 'Primary')
+    end
 
-    # Normal Island Book Clubs (partnership)
-    book_clubs = create_site(
-      slug: 'book-clubs',
-      name: 'Normal Island Book Clubs (partnership)',
-      tagline: 'Reading groups and literary events across Normal Island',
-      data_key: :book_clubs_partnership,
-      neighbourhood: Neighbourhood.find_by(name: 'Normal Island', unit: 'country')
-    )
-    assign_partnership_tag(book_clubs, 'Normal Island Book Clubs')
-
-    # Scottsville, NY (USA) — the real geography this deployment runs for;
-    # its neighbourhood is seeded by 002_scottsville.rb from config/geo/us_zips.yml
-    create_site(
-      slug: 'scottsville',
-      name: 'Scottsville',
-      tagline: "What's on in Scottsville, NY",
-      data_key: :scottsville,
-      neighbourhood: Neighbourhood.find_by(unit_code_value: '14546')
-    )
+    $stdout.puts "  Site: #{site.name} (#{site.slug}) anchored to #{district.name}"
   end
 end
 

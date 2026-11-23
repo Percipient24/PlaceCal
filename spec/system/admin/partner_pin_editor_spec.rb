@@ -10,8 +10,8 @@ RSpec.describe "Admin partner pin editor", :slow, type: :system do
                            unit_code_value: "36000000", level: 4)
   end
   let!(:scottsville) do
-    create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
-                           unit_code_value: "14546", level: 2, parent: new_york)
+    create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "TOWN",
+                           unit_code_value: "SCOTTSVL", level: 2, parent: new_york)
   end
   let!(:partner) do
     create(:partner, address: create(:address, neighbourhood: scottsville, street_address: "61 Main Street",

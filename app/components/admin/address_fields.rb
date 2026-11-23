@@ -98,13 +98,10 @@ class Components::Admin::AddressFields < Components::Admin::Base
   end
 
   # Where the editor map opens when the address has no coordinates yet: the
-  # first locally-known ZIP's centroid (the deployment's own geography, e.g.
+  # first covered town's centroid (the deployment's own geography, e.g.
   # Scottsville NY), falling back to the middle of the contiguous US.
   def default_map_center
-    entry = UsZipLookup::LOCAL_ZIPS.find { |code, data| code != 'default' && data['latitude'] }
-    return [entry.last['latitude'].to_f, entry.last['longitude'].to_f] if entry
-
-    [39.8283, -98.5795]
+    UsZipLookup.first_town_centroid || [39.8283, -98.5795]
   end
 
   def address

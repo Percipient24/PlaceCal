@@ -76,8 +76,10 @@ RSpec.describe Address, type: :model do
                              unit_code_value: "36000000", level: 4)
     end
     let!(:scottsville) do
-      create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "ZIP",
-                             unit_code_value: "14546", level: 2, parent: new_york)
+      # The town is the district: the geocoder's codes carry the town code (SCOTTSVL),
+      # not the ZIP, so the address lands on the town node
+      create(:neighbourhood, name: "Scottsville", unit: :district, unit_code_key: "TOWN",
+                             unit_code_value: "SCOTTSVL", level: 2, parent: new_york)
     end
 
     it "defaults country_code to US" do
