@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'hex_colour'
 require_relative 'theme'
 require_relative 'theme_translation'
 require_relative 'theming'

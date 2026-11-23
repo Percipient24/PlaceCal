@@ -1049,6 +1049,8 @@ en:
         hero_image_alt: "Alt Text"
         hero_image_credit: "Image Credit"
         footer_logo: "Footer Logo"
+        primary_color: "Primary Color"
+        secondary_color: "Secondary Color"
 
       supporter:
         <<: *default_attrs

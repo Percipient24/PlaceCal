@@ -21,10 +21,11 @@
 #  name              :string           not null
 #  partners_count    :integer          default(0), not null
 #  place_name        :string
+#  primary_color     :string
+#  secondary_color   :string
 #  slug              :string           not null
 #  tagline           :string
 #  theme             :string           default("pink")
-#  url               :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  site_admin_id     :bigint
@@ -49,6 +50,7 @@ class Site < ApplicationRecord
   include HtmlRenderCache
   include SiteJsonLd
   include SiteDomain
+  include SitePalette
   include SiteRobots
   include SlugRetainable
 
@@ -93,6 +95,7 @@ class Site < ApplicationRecord
   attribute :name,              :string                          # NOT NULL
   attribute :partners_count,    :integer, default: 0             # NOT NULL
   attribute :place_name,        :string                          # nullable
+  # primary_color, secondary_color -- declared in SitePalette, which also normalizes and validates them
   attribute :slug,              :string                          # NOT NULL
   attribute :tagline,           :string                          # nullable
   attribute :theme,             :string,  default: 'pink'        # nullable

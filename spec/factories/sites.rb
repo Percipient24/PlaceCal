@@ -21,10 +21,11 @@
 #  name              :string           not null
 #  partners_count    :integer          default(0), not null
 #  place_name        :string
+#  primary_color     :string
+#  secondary_color   :string
 #  slug              :string           not null
 #  tagline           :string
 #  theme             :string           default("pink")
-#  url               :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  site_admin_id     :bigint

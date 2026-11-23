@@ -351,6 +351,37 @@ RSpec.describe "Admin::Sites theme and contact authorisation", type: :request do
 
       expect(themed_site.reload.contact_email).to eq("hello@example.org")
     end
+
+    it "sees the palette color fields in the edit form" do
+      get edit_admin_site_url(themed_site, host: admin_host)
+
+      doc = Nokogiri::HTML(response.body)
+      expect(doc.css("input#site_primary_color")).to be_present
+      expect(doc.css("input#site_secondary_color")).to be_present
+    end
+
+    it "can set the palette colors, stored downcased" do
+      put_site(primary_color: "#A1B2C3", secondary_color: "#f19089")
+
+      expect(themed_site.reload.primary_color).to eq("#a1b2c3")
+      expect(themed_site.secondary_color).to eq("#f19089")
+    end
+
+    it "can clear the palette colors back to the theme's palette" do
+      themed_site.update!(primary_color: "#a1b2c3")
+
+      put_site(primary_color: "", secondary_color: "")
+
+      expect(themed_site.reload.primary_color).to be_nil
+      expect(themed_site.secondary_color).to be_nil
+    end
+
+    it "cannot set a non-hex color" do
+      put_site(primary_color: "red")
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(themed_site.reload.primary_color).to be_nil
+    end
   end
 
   context "as a root user" do

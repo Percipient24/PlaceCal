@@ -39,6 +39,7 @@ class Views::Layouts::Application < Phlex::HTML
         stylesheet_link_tag 'public_tailwind', media: 'all', 'data-turbo-track': 'reload'
         Shared::ThemeHead(theme:)
         raw content_for(:theme_head) if content_for?(:theme_head)
+        render_palette_overrides
         preload_core_fonts unless theme.font_stylesheet
         render_meta
         shim_url = asset_path('es-module-shims.js')
@@ -99,6 +100,16 @@ class Views::Layouts::Application < Phlex::HTML
   end
 
   private
+
+  # The site's palette override (Site#palette_css): an unlayered :root <style>
+  # after every stylesheet link, so it wins over the data-theme palettes in the
+  # tokens layer and over an extension theme's unlayered :root (same
+  # specificity, later in document order). Nothing to render when the site has
+  # no colors set, or on hosts with no Site row (directory, join).
+  def render_palette_overrides
+    css = site&.palette_css
+    style { raw safe(css) } if css
+  end
 
   # Theme head hook (#3368 D1/D3): a theme may register a Phlex component
   # (`theme.head "Foo::Components::Head"`) rendered here, after the stylesheet

@@ -12,11 +12,38 @@ class Views::Admin::Sites::FormTabImages < Views::Admin::Base
     )
 
     render_theme_field(site)
+    render_palette_fields(site)
     render_logo_fields(site)
     render_hero_image_field(site)
   end
 
   private
+
+  # Per-site palette override colors (Site#palette_css): hex codes set here
+  # apply on top of the picked theme with no build step. Blank means "use the
+  # theme's palette"; the secondary ramp follows the primary when blank.
+  def render_palette_fields(site)
+    return unless policy(site).permitted_attributes.include?(:primary_color)
+
+    fieldset(class: 'fieldset mb-8') do
+      legend(class: 'fieldset-legend') { t('admin.sites.fields.palette_colors') }
+      div(class: 'grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl') do
+        Field(for: form.field_id(:primary_color), label: attr_label(:site, :primary_color),
+              hint: t('admin.sites.fields.primary_color_hint')) do |f|
+          raw form.input_field(:primary_color, class: 'input input-bordered w-full font-mono text-sm',
+                                               placeholder: '#afcf5a', pattern: PlaceCal::HexColour::HTML_PATTERN,
+                                               maxlength: 9, **f.aria)
+        end
+
+        Field(for: form.field_id(:secondary_color), label: attr_label(:site, :secondary_color),
+              hint: t('admin.sites.fields.secondary_color_hint')) do |f|
+          raw form.input_field(:secondary_color, class: 'input input-bordered w-full font-mono text-sm',
+                                                 placeholder: '#f19089', pattern: PlaceCal::HexColour::HTML_PATTERN,
+                                                 maxlength: 9, **f.aria)
+        end
+      end
+    end
+  end
 
   def render_theme_field(site)
     return unless policy(site).permitted_attributes.include?(:theme)

@@ -42,6 +42,45 @@ RSpec.describe "Public Sites", type: :request do
     end
   end
 
+  describe "palette overrides" do
+    def head_style_blocks
+      Nokogiri::HTML(response.body).css("head style").map(&:text)
+    end
+
+    it "renders the site's palette as an unlayered :root style after the stylesheets" do
+      site.update!(primary_color: "#f19089", secondary_color: "#74d4ec")
+      get "http://hulme.lvh.me"
+
+      expect(response).to be_successful
+      styles = head_style_blocks
+      palette = styles.find { |css| css.include?("--color-primary:") }
+      expect(palette).to be_present
+      expect(palette).to include(":root")
+      expect(palette).to include("--color-primary: #f19089;")
+      expect(palette).to include("--color-primary-light: #f5aca7;")
+      expect(palette).to include("--color-secondary: #74d4ec;")
+
+      # Later in <head> than the public stylesheet, so the unlayered rule wins
+      # over the data-theme palettes in the tokens layer.
+      head = response.body[%r{<head>.*</head>}m]
+      expect(head.index("--color-primary: #f19089;")).to be > head.index("public_tailwind")
+    end
+
+    it "renders no palette style when the site has no colors set" do
+      get "http://hulme.lvh.me"
+
+      expect(response).to be_successful
+      expect(head_style_blocks.join).not_to include("--color-primary:")
+    end
+
+    it "renders no palette style on the directory, which has no Site row" do
+      get "http://lvh.me"
+
+      expect(response).to be_successful
+      expect(head_style_blocks.join).not_to include("--color-primary:")
+    end
+  end
+
   describe "tag cards" do
     it "hides tag cards by default" do
       get "http://hulme.lvh.me"

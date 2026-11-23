@@ -61,7 +61,7 @@ class SitePolicy < ApplicationPolicy
   def permitted_attributes
     attrs = %i[id name place_name logo footer_logo is_published tagline description
                badge_zoom_level hero_image hero_image_credit hero_alttext hero_text theme
-               contact_email]
+               contact_email primary_color secondary_color]
 
     root_attrs = %i[slug domain site_admin_id tags sites_neighbourhoods]
                  .push(tag_ids: [],

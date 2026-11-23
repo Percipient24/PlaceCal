@@ -122,4 +122,24 @@ RSpec.describe SitePolicy, :theme_registry, type: :policy do
       end
     end
   end
+
+  describe "#permitted_attributes" do
+    let(:site) { create(:site, theme: "pink", site_admin:) }
+
+    context "as the site's admin" do
+      let(:user) { site_admin }
+
+      it "includes the palette override colors" do
+        expect(policy.permitted_attributes).to include(:primary_color, :secondary_color)
+      end
+    end
+
+    context "as root" do
+      let(:user) { root_user }
+
+      it "includes the palette override colors" do
+        expect(policy.permitted_attributes).to include(:primary_color, :secondary_color)
+      end
+    end
+  end
 end

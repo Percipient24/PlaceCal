@@ -844,12 +844,15 @@ en:
         hero_image_description: "The large image at the top of your site's homepage."
         hero_text_hint: "Large text for the homepage banner"
         image_credit_hint: "Who took this photo?"
+        palette_colors: "Palette Colors"
         partnership_tags: "Partnership Tags"
         partnership_tags_hint: "If selected, only show partners which are members of these partnerships."
         place_name_hint: 'The location this site covers (e.g., "Hulme")'
+        primary_color_hint: "Main brand color, as a hex code (e.g. #afcf5a). Overrides the theme's primary color. Leave blank to use the theme's."
         published: "Published"
         published_hint: "Advertise this site on the PlaceCal homepage"
         publishing_status: "Publishing Status"
+        secondary_color_hint: "Contrast color, as a hex code (e.g. #f19089). Leave blank to derive it from the primary color."
         site_admin: "Site Admin"
         slug_placeholder: "your-site"
       domain_status:

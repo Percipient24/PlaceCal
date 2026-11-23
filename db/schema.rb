@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_20_220815) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -300,6 +300,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_220815) do
     t.string "theme", default: "pink"
     t.datetime "updated_at", precision: nil, null: false
     t.string "url"
+    t.string "primary_color"
+    t.string "secondary_color"
     t.index ["domain"], name: "index_sites_on_domain", unique: true, where: "(domain IS NOT NULL)"
     t.index ["events_count"], name: "index_sites_on_events_count"
     t.index ["is_published"], name: "index_sites_is_published"

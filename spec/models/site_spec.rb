@@ -9,6 +9,7 @@
 #  contact_email     :string
 #  description       :text
 #  description_html  :string
+#  domain            :string
 #  events_count      :integer          default(0), not null
 #  footer_logo       :string
 #  hero_alttext      :string
@@ -20,10 +21,11 @@
 #  name              :string           not null
 #  partners_count    :integer          default(0), not null
 #  place_name        :string
+#  primary_color     :string
+#  secondary_color   :string
 #  slug              :string           not null
 #  tagline           :string
 #  theme             :string           default("pink")
-#  url               :string           not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  site_admin_id     :bigint
@@ -31,6 +33,7 @@
 # Indexes
 #
 #  index_sites_is_published       (is_published)
+#  index_sites_on_domain          (domain) UNIQUE WHERE (domain IS NOT NULL)
 #  index_sites_on_events_count    (events_count)
 #  index_sites_on_partners_count  (partners_count)
 #  index_sites_slug               (slug) UNIQUE
@@ -427,6 +430,68 @@ RSpec.describe Site, type: :model do
 
         expect(build(:site, theme: "ghost").stylesheet_link).to be_nil
         expect(Rails.logger).to have_received(:warn).with(%r{ghost/theme\.css})
+      end
+    end
+
+    describe "palette overrides" do
+      it "is valid with blank colors" do
+        expect(build(:site, primary_color: nil, secondary_color: nil)).to be_valid
+      end
+
+      it "accepts hex colors in 3, 6 and 8 digit forms, in any case" do
+        expect(build(:site, primary_color: "#abc")).to be_valid
+        expect(build(:site, primary_color: "#A1B2C3")).to be_valid
+        expect(build(:site, secondary_color: "#aabbccdd")).to be_valid
+      end
+
+      it "rejects non-hex colors" do
+        site = build(:site, primary_color: "red")
+        expect(site).not_to be_valid
+        expect(site.errors[:primary_color]).to be_present
+
+        expect(build(:site, primary_color: "f19089")).not_to be_valid # missing #
+        expect(build(:site, secondary_color: "#12345")).not_to be_valid
+      end
+
+      it "normalises colors to downcase and stores a blank as nil" do
+        site = create(:site, primary_color: "#A1B2C3", secondary_color: " ")
+        expect(site.reload.primary_color).to eq("#a1b2c3")
+        expect(site.secondary_color).to be_nil
+      end
+
+      describe "#palette_css" do
+        it "is nil when neither color is set" do
+          expect(build(:site, primary_color: nil, secondary_color: nil).palette_css).to be_nil
+        end
+
+        it "wraps the declarations in a :root block" do
+          css = build(:site, primary_color: "#f19089").palette_css
+          expect(css).to start_with(":root {")
+          expect(css).to end_with("}")
+        end
+
+        it "overrides primary and derives the secondary ramp from it when only primary is set" do
+          css = build(:site, primary_color: "#f19089").palette_css
+          expect(css).to include("--color-primary: #f19089;")
+          expect(css).to include("--color-primary-light: #f5aca7;")
+          expect(css).to include("--color-secondary: #f19089;")
+          expect(css).to include("--color-secondary-deep: #e47169;")
+          expect(css).to include("--color-secondary-dark: #d65a51;")
+          expect(css).to include("--color-secondary-strong: #ba443c;")
+        end
+
+        it "uses secondary for the ramp when both are set" do
+          css = build(:site, primary_color: "#afcf5a", secondary_color: "#f19089").palette_css
+          expect(css).to include("--color-primary: #afcf5a;")
+          expect(css).to include("--color-primary-light: #c3db83;")
+          expect(css).to include("--color-secondary: #f19089;")
+        end
+
+        it "overrides only the secondary ramp when only secondary is set" do
+          css = build(:site, secondary_color: "#74d4ec").palette_css
+          expect(css).not_to include("--color-primary:")
+          expect(css).to include("--color-secondary: #74d4ec;")
+        end
       end
     end
   end
